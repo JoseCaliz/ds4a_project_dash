@@ -2,7 +2,6 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
-
 header = open('templates/includes/header.html').read()
 footer = open('templates/includes/footer.html').read()
 sidenav = open('templates/includes/sidenav.html').read()
