@@ -3,11 +3,11 @@
 
 ## Descripción del proyecto
 
-TBD
+Alcaldía Municipal de Copacabana
 
 ## Recommended Python Version
 
-`3.7.6`
+`3.7.`
 
 ## Installing Requirements
 
