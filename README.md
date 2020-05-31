@@ -5,6 +5,16 @@
 
 TBD
 
+## Recommended Python Version
+
+`3.7.6`
+
+## Installing Requirements
+
+```
+pip install -r requirements.txt
+``` 
+
 ## Running
 
 ```
