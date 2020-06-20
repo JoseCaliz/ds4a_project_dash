@@ -124,3 +124,4 @@ dmypy.json
 .pyre/
 
 .DS_Store
+/.ycm_extra_conf.py

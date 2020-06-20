@@ -1,4 +1,3 @@
-# index page
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -12,7 +11,7 @@ from flask_login import logout_user, current_user
 from pages import (
     home,
     #  profile,
-    #  page1
+    page1
 )
 
 # app authentication 
@@ -29,13 +28,15 @@ from pages.auth_pages import (
 header = dbc.Navbar(
     dbc.Container(
         [
-            dbc.NavbarBrand("Dash Auth Flow", href="/home"),
+            dbc.NavbarBrand("Authentication Sample", href="/home"),
             dbc.Nav(
                 [
                     dbc.NavItem(dbc.NavLink("Home", href="/home")),
                     dbc.NavItem(dbc.NavLink("Page1", href="/page1")),
                     dbc.NavItem(dbc.NavLink(id='user-name',href='/profile')),
-                    dbc.NavItem(dbc.NavLink('Login',id='user-action',href='Login'))
+                    dbc.NavItem(dbc.NavLink('Login',
+                                            id='user-action',
+                                            href='Login'))
                 ]
             )
         ]
