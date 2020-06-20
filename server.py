@@ -1,51 +1,17 @@
-# Dash app initialization
+from flask import redirect
 import dash
-import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
+from flask_sqlalchemy import SQLAlchemy
+from config import Config
+from dash_bootstrap_components import themes
 
-# global imports
-import os
-from flask_login import LoginManager, UserMixin
-import random
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-# local imports
-from utilities.auth import db, Users as base
-from utilities.config import engine
-
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP]
-)
+app = dash.Dash(__name__,
+                external_stylesheets=[themes.BOOTSTRAP],
+                suppress_callback_exceptions=True)
 
 server = app.server
-app.config.suppress_callback_exceptions = True
-#app.css.config.serve_locally = True
-#app.scripts.config.serve_locally = True
-app.title = 'Dash Auth Flow'
-
-# TODO: Por favor debes remover esta linea
-uri = 'postgresql://ds4a:L#Nhd4z!=uH@localhost:5432/alcaldia'
-
-# config
-server.config.update(
-    SECRET_KEY=os.urandom(20),
-    SQLALCHEMY_DATABASE_URI=uri,
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
-)
-
-db.init_app(server)
-
-# Setup the LoginManager for the server
-login_manager = LoginManager()
-login_manager.init_app(server)
-login_manager.login_view = '/login'
-
-
-# Create User class with UserMixin
-class Users(UserMixin, base):
-    pass
-
-# callback to reload the user object
-@login_manager.user_loader
-def load_user(user_id):
-    return Users.query.get(int(user_id))
+server.config.from_object(Config)
+db = SQLAlchemy(server)

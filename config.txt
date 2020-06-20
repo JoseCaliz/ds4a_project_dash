@@ -1,2 +1,0 @@
-[database]
-con ='postgresql://ds4a:L#Nhd4z!=uH@localhost:5432/alcaldia'

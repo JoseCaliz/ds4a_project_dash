@@ -125,3 +125,4 @@ dmypy.json
 
 .DS_Store
 /.ycm_extra_conf.py
+*.xlsx
