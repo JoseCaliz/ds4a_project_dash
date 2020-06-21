@@ -127,4 +127,5 @@ dmypy.json
 /.ycm_extra_conf.py
 *.xlsx
 
-*json
+areas_departamentos.json
+geojson_departamentos.json
