@@ -2,14 +2,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app.models import User
-from server import app, server
-from pages import page1, login
+from server import app, server, login_manager
+from pages import page1, login, signup
 from flask_login import (
     LoginManager, current_user,
     logout_user, login_required
 )
-
-
 
 app.layout = html.Div([
     html.Div(id='url_container', children=[
@@ -18,19 +16,19 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-login_manager = LoginManager()
-login_manager.init_app(server)
-
 @app.callback(
     Output('page-content', 'children'),
     [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/home':
-        return 'home page'
-    # if (~current_user.is_authenticated):
-    if True:
+    print(pathname)
+    print('trigger')
+    if pathname == '/signup':
+        return signup.layout
+    if pathname == '/page1':
+        return 'page1'
+    elif (~current_user.is_authenticated):
         return login.layout
-    if pathname == '/pages/app1':
+    elif pathname == '/pages/app1':
         return page1.layout
     else:
         # TODO: Colocar alguna página para el 404
