@@ -19,7 +19,7 @@ server = app.server
 server.config.from_object(Config)
 
 # TODO: implementar algún método de encriptación para asegurar este llave
-server.secrete_key = b'_5#y2L"F4Q8z\n\xec]/'
+server.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 login_manager = LoginManager()
 login_manager.init_app(server)

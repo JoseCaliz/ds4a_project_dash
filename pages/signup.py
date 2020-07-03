@@ -53,6 +53,8 @@ def signup_validation():
     form_data = request.form
     print(form_data)
     new_user = User()
+
+    # TODO: cambiar eso para que el id se autoincremente
     new_user.id = 0
     new_user.name = form_data['name']
     new_user.email = form_data['email']

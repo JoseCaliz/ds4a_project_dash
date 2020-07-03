@@ -1,11 +1,16 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import re
 from dash.dependencies import Input, Output, State
 from server import app, server, db
 from flask import request, redirect
 from app.models import User
 from flask_login import login_user
+
+email_re = re.compile(
+    r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$'
+)
 
 prefix = 'Login'
 
@@ -63,33 +68,21 @@ layout = html.Div([
 ])
 
 
-@app.callback(
-    [
-        Output(f'{prefix}_email', 'valid'),
-        Output(f'{prefix}_email', 'invalid')
-    ],
-    [Input(f'{prefix}_email', 'value')],
-)
-def check_validity(text):
-    #TODO Agregar un sistema para la validación del email
-    if text:
-        is_gmail = text.endswith('@gmail.com')
-        if is_gmail:
-            return is_gmail, not is_gmail
-    return False, False
-
 def validate_user(email, password):
     print(email, password)
     saved_user = User.query.filter_by(email=email).first()
     if (saved_user is None or saved_user.password != password):
         return False
 
-    return True
+    return saved_user
 
 @server.route('/post', methods=['POST'])
 def on_post():
     data = request.form
-    print(data)
-    print(data.keys())
+    saved_user = validate_user(data['email'], data['password'])
+    if(saved_user is not False):
+        print('login succesful')
+        login_user(saved_user)
+        return redirect('/page1')
 
-    return redirect('/login')
+    return redirect('/')
