@@ -129,3 +129,5 @@ dmypy.json
 
 areas_departamentos.json
 geojson_departamentos.json
+
+*.csv
