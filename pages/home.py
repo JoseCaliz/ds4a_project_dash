@@ -9,6 +9,8 @@ import plotly.express as px
 from server import db
 import plotly.graph_objects as go
 
+app.index_string = full_template
+
 engine = db.engine
 
 queries_year ='''
@@ -144,14 +146,110 @@ fig.update_layout(
     ])
 
 fig.update_layout(title_text="Crimes in Colombia")
-
-app.index_string = full_template
-
-graph = dcc.Graph(
+graph_1 = dcc.Graph(
     id='all_problems-graph',
     figure = fig
 )
 
+# -----------------------------------------------
+query_homicidios = '''
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Homicidios' as crime,
+    count(*)
+FROM del_sexuales
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3
+UNION ALL
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Hurto Motocicletas' as crime,
+    count(*)
+FROM hurto_motocicletas
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3
+UNION ALL
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Hurto Automotores' as crime,
+    count(*)
+FROM hurto_automotores
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3
+UNION ALL
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Hurto Personas' as crime,
+    count(*)
+FROM hurto_personas
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3
+UNION ALL
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Lesiones Personales' as crime,
+    count(*)
+FROM lesiones_personales
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3
+UNION ALL
+SELECT
+    date_part('year', fecha) as fecha,
+    sexo,
+    'Domestic Violence' as crime,
+    count(*)
+FROM violencia_intrafamiliar
+WHERE
+    sexo != 'NO REPORTA'
+    AND sexo != 'NO REPORTADA'
+    AND sexo != 'NO REPORTADO'
+group by 1,2,3;
+'''
+
+
+df_f = pd.read_sql_query(query_homicidios, engine)
+
+plot_2 = px.bar(
+    data_frame=df_f,
+    x='fecha',
+    y='count',
+    color='sexo',
+    frame='crime',
+    barmode='group'
+)
+
+plot_2.update_layout(
+    title='Counts per Year',
+    xaxis=dict(title='Year'),
+    yaxis=dict(title='Counts')
+)
+
+graph_2 = dcc.Graph(
+    id='conteo_edad',
+    figure=plot_2
+)
+
 layout = html.Div([
-    graph
+    graph_1,
+    graph_2
 ])

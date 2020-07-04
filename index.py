@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from app.models import User
 from server import app, server, login_manager
-from pages import login, signup, home
+from pages import login, signup, home, models
 from flask_login import (
     LoginManager, current_user,
     logout_user, login_required
@@ -20,8 +20,8 @@ app.layout = html.Div([
     Output('page-content', 'children'),
     [Input('url', 'pathname')])
 def display_page(pathname):
-    # if pathname == '/signup':
-        # return signup.layout
+    if pathname == '/':
+        return home.layout
     # elif (current_user.is_authenticated is False):
         # return login.layout
     # elif pathname == '/pages/app1':
@@ -31,7 +31,7 @@ def display_page(pathname):
     # else:
         # # TODO: Colocar alguna página para el 404
         # return '404'
-    return home.layout
+    return models.layout
 
 @login_manager.user_loader
 def load_user(user_id):
