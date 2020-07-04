@@ -1305,7 +1305,7 @@ label,
 .logo {
   display: inline-block;
   width: 45px;
-  height: 25px;
+  height: 60px;
   vertical-align: middle;
   margin-right: 5px;
   position: relative; }
@@ -1334,6 +1334,10 @@ label,
     .logo .l.l5 {
       bottom: 0;
       left: 34px; }
+.logo img{
+    width:45px;
+    display: block
+}
 
 .modal-body.modal-tab-container {
   padding: 0; }
