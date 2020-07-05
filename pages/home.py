@@ -228,14 +228,14 @@ group by 1,2,3;
 
 
 df_f = pd.read_sql_query(query_homicidios, engine)
+print(df_f)
 
 plot_2 = px.bar(
     data_frame=df_f,
     x='fecha',
     y='count',
     color='sexo',
-    frame='crime',
-    barmode='group'
+    animation_frame='crime',
 )
 
 plot_2.update_layout(
