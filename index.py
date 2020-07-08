@@ -1,3 +1,4 @@
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -8,6 +9,7 @@ from flask_login import (
     LoginManager, current_user,
     logout_user, login_required
 )
+from utils.functions import highlight_current_page
 
 app.layout = html.Div([
     html.Div(id='url_container', children=[
@@ -20,6 +22,8 @@ app.layout = html.Div([
     Output('page-content', 'children'),
     [Input('url', 'pathname')])
 def display_page(pathname):
+
+    print(pathname)
     if pathname == '/':
         return home.layout
     # elif (current_user.is_authenticated is False):
@@ -45,5 +49,11 @@ def logout():
     # TODO: Esto creo que toca cambiarlo utilizando los callbacks de DASH
     return server.redirect('/login')
 
+@server.route('/models')
+def update_title():
+    app.title = 'Models'
+    return app.index()
+
 if __name__ == '__main__':
     app.run_server(debug=True)
+
