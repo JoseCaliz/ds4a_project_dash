@@ -7,25 +7,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 from flask_login import LoginManager
-from templates.includes.generate_template import full_template
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-class CustomDash(dash.Dash):
-    def interpolate_index(self, **kwargs):
-        # Inspect the arguments by printing them
-        print(kwargs)
-        return full_template.format(
-            title=kwargs['title'],
-            css=kwargs['css'],
-            favicon=kwargs['favicon'],
-            app_entry=kwargs['app_entry'],
-            config=kwargs['config'],
-            scripts=kwargs['scripts'],
-            renderer=kwargs['renderer'])
-
-
-app = CustomDash(
+app = dash.Dash(
     "El Flow Violento Del Team 79",
     external_stylesheets=[themes.BOOTSTRAP],
     suppress_callback_exceptions=True)
