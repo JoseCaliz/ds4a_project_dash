@@ -11,7 +11,7 @@ from flask_login import LoginManager
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(
-    __name__,
+    "El Flow Violento Del Team 79",
     external_stylesheets=[themes.BOOTSTRAP],
     suppress_callback_exceptions=True)
 

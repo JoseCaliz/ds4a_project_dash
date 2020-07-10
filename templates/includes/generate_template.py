@@ -19,7 +19,7 @@ with open(content, 'r') as f:
 with open(footer, 'r') as f:
     footer_html = f.read()
 
-full_template = (
+full_template_vanilla = (
     header_html
     + sidenav_html
     + content_html

@@ -10,101 +10,28 @@
             </div>
             <nav class="menu">
                 <ul class="sidebar-menu metismenu" id="sidebar-menu">
-                    <li class="active">
-                        <a href="/">
-                            <i class="fa fa-home"></i> Home </a>
+                    <li class="{dashboard_div}">
+                        <a href="/dashboard">
+                            <i class="fa fa-th-large"></i> Dashboards </a>
                     </li>
-                    <li>
-                        <a href="">
-                            <i class="fa fa-th-large"></i> Dashboards <i class="fa arrow"></i>
-                        </a>
-                        <ul class="sidebar-nav">
-                            <li>
-                                <a href="/items-list.html"> Items List </a>
-                            </li>
-                            <li>
-                                <a href="/item-editor.html"> Item Editor </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
+                    <li class="{models_div}">
                         <a href="models">
-                            <i class="fa fa-area-chart"></i> Models <i class="fa arrow"></i>
-                        </a>
-                        <ul class="sidebar-nav">
-                            <li>
-                                <a href="/charts-flot.html"> Flot Charts </a>
-                            </li>
-                            <li>
-                                <a href="/charts-morris.html"> Morris Charts </a>
-                            </li>
-                        </ul>
+                            <i class="fa fa-area-chart"></i> Models </a>
                     </li>
-                    <li>
-                        <a href="">
-                            <i class="fa fa-table"></i> Tables <i class="fa arrow"></i>
-                        </a>
-                        <ul class="sidebar-nav">
-                            <li>
-                                <a href="/static-tables.html"> Static Tables </a>
-                            </li>
-                            <li>
-                                <a href="/responsive-tables.html"> Responsive Tables </a>
-                            </li>
-                        </ul>
+                    <li class="{tables_div}">
+                        <a href="/tables">
+                            <i class="fa fa-table"></i> Tables </a>
                     </li>
-                    <li>
-                        <a href="/forms.html">
+                    <li class="{about_div}">
+                        <a href="/about">
                             <i class="fa fa-pencil-square-o"></i> About Us</a>
                     </li>
-                    <li>
-                        <a href="/EDA">
-                            <i class="fa fa-sitemap"></i> Info <i class="fa arrow"></i>
-                        </a>
-                        <ul class="sidebar-nav">
-                            <li>
-                                <a href="#"> Second Level Item <i class="fa arrow"></i>
-                                </a>
-                                <ul class="sidebar-nav">
-                                    <li>
-                                        <a href="#"> Third Level Item </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"> Third Level Item </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#"> Second Level Item </a>
-                            </li>
-                            <li>
-                                <a href="#"> Second Level Item <i class="fa arrow"></i>
-                                </a>
-                                <ul class="sidebar-nav">
-                                    <li>
-                                        <a href="#"> Third Level Item </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"> Third Level Item </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"> Third Level Item <i class="fa arrow"></i>
-                                        </a>
-                                        <ul class="sidebar-nav">
-                                            <li>
-                                                <a href="#"> Fourth Level Item </a>
-                                            </li>
-                                            <li>
-                                                <a href="#"> Fourth Level Item </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <li class="{info_div}">
+                        <a href="/info">
+                            <i class="fa fa-sitemap"></i> Info </a>
                     </li>
-                    <li>
-                        <a href={{ url_for('logout') }}>
+                    <li class="logout_div">
+                        <a href=/Logout>
                             <i class="fa fa-power-off icon"></i> Logout </a>
                     </li>
                 </ul>
