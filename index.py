@@ -1,15 +1,27 @@
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app.models import User
-from server import app, server
-from pages import page1, login
+from server import app, server, login_manager
+from pages import login, signup, dashboard, models
 from flask_login import (
     LoginManager, current_user,
     logout_user, login_required
 )
+from flask import redirect
+from utils.functions import highlight_current_page
+from templates.includes.generate_template import full_template_vanilla
 
+full_template_dashboard = full_template_vanilla
+full_template_dashboard = full_template_dashboard.replace('{dashboard_div}', 'active')
+full_template_dashboard = full_template_dashboard.replace('{models_div}', '')
+full_template_dashboard = full_template_dashboard.replace('{tables_div}', '')
+full_template_dashboard = full_template_dashboard.replace('{about_div}', '')
+full_template_dashboard = full_template_dashboard.replace('{info_div}', '')
 
+app.index_string = full_template_dashboard
+app.title='Dashboard'
 
 app.layout = html.Div([
     html.Div(id='url_container', children=[
@@ -18,27 +30,18 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-login_manager = LoginManager()
-login_manager.init_app(server)
-
 @app.callback(
     Output('page-content', 'children'),
     [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/home':
-        return 'home page'
-    # if (~current_user.is_authenticated):
-    if True:
-        return login.layout
-    if pathname == '/pages/app1':
-        return page1.layout
-    else:
-        # TODO: Colocar alguna página para el 404
-        return '404'
+    if pathname == '/':
+        return dashboard.layout
+    if pathname == '/dashboard':
+        return dashboard.layout
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(user_id)
 
 @server.route("/logout")
 @login_required
@@ -48,5 +51,67 @@ def logout():
     # TODO: Esto creo que toca cambiarlo utilizando los callbacks de DASH
     return server.redirect('/login')
 
+@server.route('/dashboard')
+def update_index_dashboard():
+    app.title = 'Dashboard'
+    full_template_dashboard = full_template_vanilla
+    full_template_dashboard = \
+        full_template_dashboard.replace('{dashboard_div}', 'active')
+    full_template_dashboard = full_template_dashboard.replace('{models_div}', '')
+    full_template_dashboard = full_template_dashboard.replace('{tables_div}', '')
+    full_template_dashboard = full_template_dashboard.replace('{about_div}', '')
+    full_template_dashboard = full_template_dashboard.replace('{info_div}', '')
+    app.index_string = full_template_dashboard
+    return app.index()
+
+@server.route('/models')
+def update_index_model():
+    app.title = 'Models'
+    full_template_models = full_template_vanilla
+    full_template_models = full_template_models.replace('{dashboard_div}', '')
+    full_template_models = full_template_models.replace('{models_div}', 'active')
+    full_template_models = full_template_models.replace('{tables_div}', '')
+    full_template_models = full_template_models.replace('{about_div}', '')
+    full_template_models = full_template_models.replace('{info_div}', '')
+    app.index_string = full_template_models
+    return app.index()
+
+@server.route('/tables')
+def update_index_tables():
+    app.title = 'Tables'
+    full_template_tables = full_template_vanilla
+    full_template_tables = full_template_tables.replace('{dashboard_div}', '')
+    full_template_tables = full_template_tables.replace('{models_div}', '')
+    full_template_tables = full_template_tables.replace('{tables_div}', 'active')
+    full_template_tables = full_template_tables.replace('{about_div}', '')
+    full_template_tables = full_template_tables.replace('{info_div}', '')
+    app.index_string = full_template_tables
+    return app.index()
+
+@server.route('/about')
+def update_index_about():
+    app.title = 'About'
+    full_template_about = full_template_vanilla
+    full_template_about = full_template_about.replace('{dashboard_div}', '')
+    full_template_about = full_template_about.replace('{models_div}', '')
+    full_template_about = full_template_about.replace('{tables_div}', '')
+    full_template_about = full_template_about.replace('{about_div}', 'active')
+    full_template_about = full_template_about.replace('{info_div}', '')
+    app.index_string = full_template_about
+    return app.index()
+
+@server.route('/info')
+def update_index_info():
+    app.title = 'Info'
+    full_template_info = full_template_vanilla
+    full_template_info = full_template_info.replace('{dashboard_div}', '')
+    full_template_info = full_template_info.replace('{models_div}', '')
+    full_template_info = full_template_info.replace('{tables_div}', '')
+    full_template_info = full_template_info.replace('{about_div}', '')
+    full_template_info = full_template_info.replace('{info_div}', 'active')
+    app.index_string = full_template_info
+    return app.index()
+
 if __name__ == '__main__':
     app.run_server(debug=True)
+
