@@ -11,14 +11,9 @@ from flask_login import (
 )
 from flask import redirect
 from utils.functions import highlight_current_page
-from templates.includes.generate_template import full_template_vanilla
+from assets.generate_template import full_template_vanilla
 
 full_template_dashboard = full_template_vanilla
-full_template_dashboard = full_template_dashboard.replace('{dashboard_div}', 'active')
-full_template_dashboard = full_template_dashboard.replace('{models_div}', '')
-full_template_dashboard = full_template_dashboard.replace('{tables_div}', '')
-full_template_dashboard = full_template_dashboard.replace('{about_div}', '')
-full_template_dashboard = full_template_dashboard.replace('{info_div}', '')
 
 app.index_string = full_template_dashboard
 app.title='Dashboard'
