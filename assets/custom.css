@@ -1,8 +1,0 @@
-*[data-dash-is-loading="true"]{
-    content: "NOT LOADIN";
-    visibility: hidden;
-}
-
-._dash-loading{
-    display: none;
-}
