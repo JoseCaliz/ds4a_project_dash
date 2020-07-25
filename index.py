@@ -29,11 +29,14 @@ app.layout = html.Div([
     Output('page-content', 'children'),
     [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/':
-        # return dashboard.layout
-        return about.layout
-    if pathname == '/dashboard':
+    if pathname == '/' or pathname == '/dashboard':
         return dashboard.layout
+    if pathname == '/tables':
+        return dashboard.layout
+    if pathname == '/models':
+        return dashboard.layout
+    if pathname == '/about':
+        return about.layout
 
 @login_manager.user_loader
 def load_user(user_id):
