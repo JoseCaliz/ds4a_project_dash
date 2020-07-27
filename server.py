@@ -7,6 +7,19 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 from flask_login import LoginManager
+from sqlalchemy import create_engine
+
+driver = 'postgres'
+username = 'ds4a'
+password = 'ds4A-7eaM79'
+host = 'ds4a.cm1dcdf7pnnv.us-east-2.rds.amazonaws.com'
+port = 5432
+database = 'team_79'
+connection_string = f'{driver}://{username}:{password}@{host}:{port}/{database}'
+engine2 = create_engine(connection_string, encoding='utf8')
+
+
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
