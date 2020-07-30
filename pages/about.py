@@ -54,7 +54,7 @@ Mathematician, master in Applied Mathematics, and PhD candidate in Systems and C
 
 Ingeniero Mecatrónico con conocimientos en: programación de lenguajes como C, C++, C#, JAVA, JAVASCRIPT, HTML, Sql Oracle, Unix, Visual Basic (Excel Avanzado), entre otros; programación de dispositivos electrónicos como PLC, FPGA y Micro-Controladores; manejo de Software para diseño (CAD) y fabricación (CAM) de dispositivos electrónicos y mecánicos. Con afinidad por el desarrollo de software, robótica e inteligencia artifical.
 
-Serio y emprendedor, habituado al trabajo y desarrollo de proyectos en equipo; con facilidad para aprender y a la constante expectativa de adquisición de nuevos conocimientos y actualización profesional. 
+Serio y emprendedor, habituado al trabajo y desarrollo de proyectos en equipo; con facilidad para aprender y a la constante expectativa de adquisición de nuevos conocimientos y actualización profesional.
 '''
         ), width=4, align='center')
     ],
