@@ -109,7 +109,7 @@ ys = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
 dropdown2=dcc.Dropdown(
         id="year_dropdown",
         options=[{"label":year, "value":year} for year in ys],
-        #value=[2018],
+        value=2018,
         placeholder="Select a year",
         multi=False
         )

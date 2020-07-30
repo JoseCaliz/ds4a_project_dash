@@ -14,78 +14,74 @@ import json
 engine = db.engine
 
 mapa_query ='''
-SELECT barrio, extract(year FROM fecha) AS year, sexo, 'robbery' AS crime, COUNT(barrio) AS total
+SELECT departamento, extract(year FROM fecha) AS year, sexo, 'robbery' AS crime, COUNT(dia) AS total
 FROM hurto_personas
-WHERE municipio LIKE 'BOGOTÁ D.C.'
-GROUP BY barrio, year, sexo
+GROUP BY departamento, year, sexo
 
 UNION ALL
 
-SELECT barrio, extract(year FROM fecha) AS year, sexo, 'dom_viol' AS crime, COUNT(barrio) AS total
+SELECT departamento, extract(year FROM fecha) AS year, sexo, 'dom_viol' AS crime, COUNT(dia) AS total
 FROM violencia_intrafamiliar
-WHERE municipio LIKE 'BOGOTÁ D.C.'
-GROUP BY barrio, year, sexo
+GROUP BY departamento, year, sexo
 
 UNION ALL
 
-SELECT barrio, extract(year FROM fecha) AS year, sexo, 'murder' AS crime, COUNT(barrio) AS total
+SELECT departamento, extract(year FROM fecha) AS year, sexo, 'murder' AS crime, COUNT(dia) AS total
 FROM homicidios
-WHERE municipio LIKE 'BOGOTÁ D.C.'
-GROUP BY barrio, year, sexo
+GROUP BY departamento, year, sexo
 
 UNION ALL
 
-SELECT barrio, extract(year FROM fecha) AS year, sexo, 'sex_off' AS crime, COUNT(barrio) AS total
+SELECT departamento, extract(year FROM fecha) AS year, sexo, 'sex_off' AS crime, COUNT(dia) AS total
 FROM del_sexuales
-WHERE municipio LIKE 'BOGOTÁ D.C.'
-GROUP BY barrio, year, sexo
+GROUP BY departamento, year, sexo
+
 
 '''
-with open('D:/Barrios_Bog/loca.geojson', encoding='utf8') as geo:
-    geojson = json.loads(geo.read())
+with open('D:/Barrios_Bog/geojson_departamentos.json', encoding='utf8') as geo:
+    geoj = json.loads(geo.read())
 
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
-matcher = pd.read_csv(r'C:\Users\Admin\Desktop\matcher.csv', encoding='UTF8')
-matcher2 = pd.read_csv(r'C:/Users/Admin/Desktop/matcherloca.csv', encoding='UTF8')
-mapper = matcher.set_index('barrio_original').to_dict()['nom_match']
-mapper2 = matcher2.set_index('bar_orig').to_dict()['loc_match']
-df['mapid'] = df.barrio.map(mapper)
-df['locid'] = df.mapid.map(mapper2)
+matcher = pd.read_csv(r'C:\Users\Admin\Desktop\matcherdpto.csv', encoding='UTF8')
 
+mapper = matcher.set_index('dpto_orig').to_dict()['nom_match']
+df['mapid']=df.departamento.map(mapper)
 dff=df.groupby(['mapid','year','crime']).sum().reset_index()
-dfloca=df.groupby(['locid','year','crime']).sum().reset_index()
-
 crimes=['robbery','dom_viol','sex_off','murder']
 year = 2012
-loca_one=['SUBA']
-barrio=['PASADENA']
+depto=['QUINDIO']
 #dfmap = dff[(dff['year']==year)&(dff['crime'].isin(crimes))]
 dfgender = df.groupby(['mapid','year','crime','sexo']).sum().reset_index()
-dfgender2 = df.groupby(['locid','year','crime','sexo']).sum().reset_index()
-
-
-df18 = dfgender2[(dfgender2['crime'].isin(crimes))&(dfgender2['locid'].isin(loca_one))]
 
 
 
-dfmap = dfloca[(dfloca['year']==2018)]#&(dfloca['crime'].isin(crimes))]
-dfmap = dfmap.groupby('locid').sum().reset_index()
+df18 = dfgender[(dfgender['crime'].isin(crimes))&(dfgender['mapid'].isin(depto))]
+
+
+
+dfmap = dff[(dff['year']==year)&(dff['crime'].isin(crimes))]
+dfmap = dfmap.groupby('mapid').sum().reset_index()
+
+
+
 
 #Create the map:
 Map_fig = px.choropleth_mapbox(dfmap,
-        locations='locid',
+        locations='mapid',
         color='total',
-        featureidkey="properties.LocNombre",
-        geojson=geojson,
-        zoom=11,
+        #featureidkey="properties.NOMBRE_DPT",
+        geojson=geoj,
+        zoom=7,
         mapbox_style="stamen-toner",
-        center={"lat": 4.655115, "lon": -74.055404}, #Center not too close to the actual center
+        center={"lat": 4.655115, "lon": -74.055404}, #Center
 
-        color_continuous_scale="portland",         #Color Scheme
+        color_continuous_scale="matter",         #Color Scheme
         opacity=0.5,
-        title='Total crimes in Bogotá by Neighborhood'
+        title='Total crimes in Colombia by Department'
         )
-Map_fig.update_layout(title='Total crimes in Bogotá by Neighborhood',paper_bgcolor="#fffff0",margin={"r":0,"t":0,"l":20,"b":0},mapbox=dict(bearing=95))
+Map_fig.update_layout(title='Total Crimes per Department',paper_bgcolor="#fffff0",margin={"r":0,"t":0,"l":20,"b":0})
+
+
 
 hidden_div = html.Div(className='current_location',
                       children='home',
@@ -94,13 +90,13 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 #Creating dropdown
 
-ys = dff.year.unique()
+ys = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
 
 dropdown=dcc.Dropdown(
         id="year_dropdown",
         options=[{"label":year, "value":year} for year in ys],
         value=2018,
-        placeholder="Select a Year",
+        placeholder="Select a year",
         multi=False
         )
 
@@ -109,28 +105,34 @@ revval = {value : key for (key, value) in values.items()}
 dropdowncrime=dcc.Dropdown(
         id="crime_dropdown",
         options=[{"label":key, "value":values[key]} for key in values.keys()],
-        value=["sex_off",'murder'],
-        placeholder="Select a Crime",
+        value=["sex_off",'robbery'],
+        placeholder="Select a crime",
         multi=True
         )
 
-localidades=dfloca.locid.unique()
+deptos=['AMAZONAS', 'ANTIOQUIA', 'ARAUCA',
+       'ATLANTICO', 'BOLIVAR', 'BOYACA', 'CALDAS', 'CAQUETA', 'CASANARE',
+       'CAUCA', 'CESAR', 'CHOCO', 'CORDOBA', 'CUNDINAMARCA', 'GUAINIA',
+       'GUAVIARE', 'HUILA', 'LA GUAJIRA', 'MAGDALENA', 'META', 'NARIÑO',
+       'NORTE DE SANTANDER', 'PUTUMAYO', 'QUINDIO', 'RISARALDA',
+       'SANTANDER', 'SUCRE', 'TOLIMA', 'VALLE DEL CAUCA', 'VAUPES',
+       'VICHADA']
 
-dropdownloca=dcc.Dropdown(
-        id="loca_dropdown",
-        options=[{"label":loca, "value":loca} for loca in localidades],#+[{"label": 'ALL', "value":localidades}],
-        value='SUBA',
-        placeholder="Select a Locality",
+dropdowndepto=dcc.Dropdown(
+        id="depto_dropdown",
+        options=[{"label":dpto, "value":dpto} for dpto in deptos]+[{"label": 'SAN ANDRES', "value":'ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA'}],
+        value='QUINDIO',
+        placeholder="Select a Department",
         multi=False
         )
 
 
-ngbr=dff.mapid.unique()
+ngbr=['EGIPTO', 'CHAPINERO', 'BELLA SUIZA']
 
 dropdownngbr=dcc.Dropdown(
         id="ngbr_dropdown",
         options=[{"label":ngbr, "value":ngbr} for ngbr in ngbr],
-        value='PASADENA',
+        value='CHAPINERO',
         placeholder="Select a Neighborhood",
         multi=False
         )
@@ -221,13 +223,38 @@ fig4 = px.bar(df18, x="year", y="total",
              color='sexo',# barmode='group',
              facet_col='crime'
              )
-fig4.update_layout(paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',margin={"r":5,"t":10,"l":5,"b":0},legend={'x':0})
+fig4.update_layout(paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',margin={"r":5,"t":0,"l":5,"b":0},legend={'x':0})
 
-dfline = dfloca[(dfloca['crime'].isin(crimes))&(dfloca['locid'].isin(loca_one))]
+dfline = dff[(dff['crime'].isin(crimes))&(dff['mapid'].isin(depto))]
 Line_fig=px.line(dfline,x="year",y="total", color="crime")
-Line_fig.update_layout(title='Total Crimes in Selected Locality',paper_bgcolor="#fffff0")
+Line_fig.update_layout(title='Total Crimes in Colombia',paper_bgcolor="#fffff0")
 
 
+
+dummybar = dcc.Graph(
+        id='example-graph',
+        figure={
+            'data': [
+                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+            ],
+            'layout': {
+                'title': 'Dash Data Visualization',
+                'plot_bgcolor':"#fffff0",
+                'paper_bgcolor':"#fffff0",
+                'margin':dict(l=40, r=20, t=00, b=00),
+
+            }
+        }
+    )
+
+# df = pd.DataFrame({
+#     "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+#     "Amount": [4, 1, 2, 2, 4, 5],
+#     "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
+# })
+
+#fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 
 layout = dbc.Container(children=[
 
@@ -235,7 +262,7 @@ layout = dbc.Container(children=[
 dbc.Row(
             [
                 dbc.Col(dropdowncrime, width=6, lg=3),
-                dbc.Col(dropdownloca, width=6, lg=3),
+                dbc.Col(dropdowndepto, width=6, lg=3),
                 dbc.Col(dropdown, width=6, lg=3),
                 #dbc.Col(html.Div("I wonder what to put here"), width=6, lg=3),
             ],justify='center',style={"height": "5%"}
@@ -253,7 +280,7 @@ dbc.Row(
                             dbc.Row([
 
                                 dbc.Col([
-                                        html.Div(html.H2("## **Risk Calculator** "
+                                        html.Div(dcc.Markdown("## **Risk Calculator** "
                                         )),
 
                                 ], style={'height': '100%'}),
@@ -319,9 +346,8 @@ dbc.Row(
                     dbc.Row(
                         #dbc.Col(width=2),
                         dbc.Col(dcc.Graph(figure=Line_fig, id='predict_bar',className="h-100"),
-                         style={'height': '100%', 'paddingTop':'0'}),
-                    style={'height': '30%'},
-                    #no_gutters=True
+                         style={'height': '100%'}),
+                    style={'height': '30%'}
                     )
 
 
@@ -351,35 +377,34 @@ dbc.Row(
     ],
 )
 def update_map_plot(crime_drop,year_drop):
-    dfmap = dfloca[(dfloca['year']==year_drop)&(dfloca['crime'].isin(crime_drop))]
-    dfmap = dfmap.groupby('locid').sum().reset_index()
+    dfmap = dff[(dff['year']==year_drop)&(dff['crime'].isin(crime_drop))]
+    dfmap = dfmap.groupby('mapid').sum().reset_index()
     Map_fig2 = px.choropleth_mapbox(dfmap,
-            locations='locid',
+            locations='mapid',
             color='total',
-            featureidkey="properties.LocNombre",
-            geojson=geojson,
-            zoom=11,
+            #featureidkey="properties.NOMBRE_DPT",
+            geojson=geoj,
+            zoom=7,
             mapbox_style="stamen-toner",
             center={"lat": 4.655115, "lon": -74.055404}, #Center
 
-            color_continuous_scale="portland",         #Color Scheme
+            color_continuous_scale="rdYlGn",         #Color Scheme
             opacity=0.5,
-            #title='Total crimes in Colombia'
+            title='Total crimes in Colombia'
             )
-    Map_fig2.update_layout(title='Total Crimes per Locality',margin={"r":0,"t":0,"l":5,"b":0},
-                            paper_bgcolor="rgba(0,0,0,0)",mapbox=dict(bearing=95))
+    Map_fig2.update_layout(title='Total de Crímenes por Departamento',margin={"r":0,"t":0,"l":5,"b":0},paper_bgcolor="rgba(0,0,0,0)")
 
     return Map_fig2
 
 
 
 @app.callback(
-    Output('loca_dropdown','value'),
+    Output('depto_dropdown','value'),
     [
         Input('Crime_map','clickData')
     ],
     [
-        State('loca_dropdown','value')
+        State('depto_dropdown','value')
     ]
 
 )
@@ -408,30 +433,42 @@ def click_saver(clickData,state):
     ],
     [
         Input("crime_dropdown","value"),
-        Input("loca_dropdown", "value")
+        Input("depto_dropdown", "value")
     ],
 )
-def update_gender_and_line_plot(crime_drop,ngbr_drop):
-    nghbrhd=[]
-    nghbrhd.append(ngbr_drop)
+def update_gender_and_line_plot(crime_drop,depto_drop):
+    dptos=[]
+    dptos.append(depto_drop)
 
-    df18 = dfgender2[(dfgender2['crime'].isin(crime_drop))&(dfgender2['locid'].isin(nghbrhd))]
+    df18 = dfgender[(dfgender['crime'].isin(crime_drop))&(dfgender['mapid'].isin(dptos))]
     fig5 = px.bar(df18, x="year", y="total",
                  color='sexo',# barmode='group',
-                 facet_col='crime',labels={'sexo':'Sexo','crime':'Crime','total':'Total','year':'Year'}
+                 facet_col='crime'
                  )
-    fig5.update_layout(paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',margin={"r":5,"t":5,"l":5,"b":0},legend={'x':0})
+    fig5.update_layout(paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',margin={"r":5,"t":0,"l":5,"b":0},legend={'x':0})
 
-    dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
+    dfline = dff[(dff['crime'].isin(crime_drop))&(dff['mapid'].isin(dptos))]
     Line_fig2=px.line(dfline,x="year",y="total", color="crime")
-    Line_fig2.update_layout(title={ 'text': 'Total Crimes in {}'.format(nghbrhd[0]),
-                            'y':0.5,
-                            'x':0.5,
-                            'xanchor': 'center',
-                            'yanchor': 'top'},
+    Line_fig2.update_layout(title='Total Crimes in {}'.format(dptos[0]),
                             paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',
-                            margin={"r":5,"t":10,"l":5,"b":0},legend={'x':0})
-
-
+                            margin={"r":5,"t":0,"l":5,"b":0},legend={'x':0})
 
     return [fig5, Line_fig2]
+
+
+
+    # @app.callback(
+    #     Output('predict_bar', 'figure'),
+    #     [
+    #         Input("crime_dropdown","value"),
+    #         Input("depto_dropdown", "value")
+    #     ],
+    # )
+    # def update_line_plot(crime_drop,depto_drop):
+    #     dptos=[]
+    #     dptos.append(depto_drop)
+    #     dfline = dff[(dff['crime'].isin(crime_drop))&(dff['mapid'].isin(dptos))]
+    #     Line_fig2=px.line(dfline,x="year",y="total", color="crime")
+    #     Line_fig2.update_layout(title='Total Crimes in Colombia',paper_bgcolor="#fffff0")
+    #
+    #     return Line_fig2

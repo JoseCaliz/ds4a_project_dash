@@ -35,62 +35,64 @@ engine = create_engine(connection_string, encoding='utf8')
 #The data will be obtained via SQL query
 
 mapa_query ='''
-SELECT barrio, 'robbery' AS crime, extract(year FROM fecha) AS year
+SELECT departamento, extract(year FROM fecha) AS year, 'robbery' AS crime, COUNT(dia) AS total
 FROM hurto_personas
-WHERE municipio LIKE 'BOGOTÁ D.C.'
+GROUP BY departamento, year
 
 UNION ALL
 
-SELECT barrio, 'dom_viol' AS crime, extract(year FROM fecha) AS year
+SELECT departamento, extract(year FROM fecha) AS year, 'dom_viol' AS crime, COUNT(dia) AS total
 FROM violencia_intrafamiliar
-WHERE municipio LIKE 'BOGOTÁ D.C.'
+GROUP BY departamento, year
 
 UNION ALL
 
-SELECT barrio, 'murder' AS crime, extract(year FROM fecha) AS year
+SELECT departamento, extract(year FROM fecha) AS year, 'murder' AS crime, COUNT(dia) AS total
 FROM homicidios
-WHERE municipio LIKE 'BOGOTÁ D.C.'
+GROUP BY departamento, year
 
 UNION ALL
 
-SELECT barrio, 'sex_off' AS crime, extract(year FROM fecha) AS year
+SELECT departamento, extract(year FROM fecha) AS year, 'sex_off' AS crime, COUNT(dia) AS total
 FROM del_sexuales
-WHERE municipio LIKE 'BOGOTÁ D.C.'
+GROUP BY departamento, year
 
 '''
 # with open('D:/Barrios_Bog/BogotaNeighborhood.geojson') as geo:
 #     geojson = json.loads(geo.read())
-with open('D:/Barrios_Bog/SCat.geojson') as geo2:
-    geoj = json.loads(geo2.read())
+with open('D:/Barrios_Bog/geojson_departamentos.json', encoding='utf8') as geo:
+    geoj = json.loads(geo.read())
 
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
-matcher = pd.read_csv(r'C:\Users\Admin\Desktop\matcher.csv', encoding='UTF8')
+matcher = pd.read_csv(r'C:\Users\Admin\Desktop\matcherdpto.csv', encoding='UTF8')
 
-mapper = matcher.set_index('barrio_original').to_dict()['nom_match']
-df['mapid']=df.barrio.map(mapper)
-dff=df.groupby(['mapid','year','crime']).count().reset_index()
+mapper = matcher.set_index('dpto_orig').to_dict()['nom_match']
+df['mapid']=df.departamento.map(mapper)
+dff=df.groupby(['mapid','year','crime']).sum().reset_index()
 crimes=['robbery','dom_viol','sex_off']
 year = 2012
 
-dfmap = dff[dff['year']==year][dff['crime'].isin(crimes)].rename(columns={'mapid':'Barrio','barrio':'Total_crimen'}).groupby('Barrio').sum()['Total_crimen'].reset_index()
-dfmap = dfmap.sort_values('Total_crimen', ascending=False)[1:]
+dfmap = dff[(dff['year']==year)&(dff['crime'].isin(crimes))]
 
-Map_fig = px.choropleth_mapbox(dfmap.sort_values('Total_crimen', ascending=False)[1:],
-        locations='Barrio',
-        color='Total_crimen',
-        featureidkey="properties.SCANOMBRE",
+
+#Now we create the map
+
+
+Map_fig = px.choropleth_mapbox(dfmap,
+        locations='mapid',
+        color='total',
+        featureidkey="properties.NOMBRE_DPT",
         geojson=geoj,
-        zoom=8,
+        zoom=4,
         mapbox_style="stamen-toner",
         center={"lat": 4.655115, "lon": -74.055404}, #Center
 
         color_continuous_scale="matter",         #Color Scheme
-        opacity=0.4,
-        title='Total crimes in Bogotá'
+        opacity=0.5,
+        title='Total crimes in Colombia by Department'
         )
-#Now we create the map
 
-Map_fig.update_layout(title='Total de Crímenes por Ciudad',paper_bgcolor="#F8F9F9")
+Map_fig.update_layout(title='Total de Crímenes por Departamento',paper_bgcolor="#F8F9F9")
 
 values={'Robbery and theft':'robbery','Domestic violence':'dom_viol','Sex offenses':'sex_off'}
 
@@ -103,11 +105,11 @@ dropdown=dcc.Dropdown(
         multi=True
         )
 #Now the dropdown for years
-ys = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+ys = [year for year in dff.year.unique()]
 dropdown2=dcc.Dropdown(
         id="year_dropdown",
         options=[{"label":year, "value":year} for year in ys],
-        value=[2018],
+        value=2018,
         placeholder="Select a year",
         multi=False
         )
@@ -159,10 +161,10 @@ app.layout = html.Div([
  #Place the main graph component here:
 dcc.Graph(figure=Map_fig, id='Crime_map'),
 
-        html.H5("Select year"),
+        html.H5("Select year:"),
         dropdown2,
         html.Hr(),
-        html.H5("Select crime"),
+        html.H5("Select crime or crimes:"),
         dropdown
 
 
@@ -172,32 +174,33 @@ dcc.Graph(figure=Map_fig, id='Crime_map'),
 
 
 @app.callback(
-    Output("Crime_map", "figure"),
+    Output('Crime_map', 'figure'),
     [
-        Input("crime_dropdown","value"),
-        Input("year_dropdown", "value")
+    #    Input("crime_dropdown","value"),
+    Input("year_dropdown", "value")
     ],
 )
-def make_map_plot(crime_dropdown, date):
-    dfmap = dff[dff['year'].isin(date)][dff['crime'].isin(crime_dropdown)].rename(columns={'mapid':'Barrio','barrio':'Total_crimen'}).groupby('Barrio').sum()['Total_crimen'].reset_index()
-    dfmap = dfmap.sort_values('Total_crimen', ascending=False)[1:]
+def make_map_plot(date_drop):  #crime_drop,
+    dfmap = dff[dff['year']==date_drop]
 
-    Map_fig = px.choropleth_mapbox(dfmap.sort_values('Total_crimen', ascending=False)[1:],
-            locations='Barrio',
-            color='Total_crimen',
-            featureidkey="properties.SCANOMBRE",
+    #)&(dff['crime'].isin(crime_drop))]
+
+    Map_fig2 = px.choropleth_mapbox(dfmap,
+            locations='mapid',
+            color='total',
+            featureidkey="properties.NOMBRE_DPT",
             geojson=geoj,
-            zoom=13,
+            zoom=7,
             mapbox_style="stamen-toner",
             center={"lat": 4.655115, "lon": -74.055404}, #Center
 
             color_continuous_scale="matter",         #Color Scheme
-            opacity=0.4,
+            opacity=0.5,
             title='Total crimes in Bogotá'
             )
-    Map_fig.update_layout(title='Total de Crímenes por Departamento',paper_bgcolor="#F8F9F9")
+    Map_fig2.update_layout(title='Total de Crímenes por Departamento',paper_bgcolor="#F8F9F9")
 
-    return Map_fig
+    return Map_fig2
 
 
 
