@@ -4,7 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from app.models import User
 from server import app, server, login_manager
-from pages import login, signup, dashboard, models, about
+from pages import login, signup, dashboard, models, about, tables
 from flask_login import (
     LoginManager, current_user,
     logout_user, login_required
@@ -32,7 +32,7 @@ def display_page(pathname):
     if pathname == '/' or pathname == '/dashboard':
         return dashboard.layout
     if pathname == '/tables':
-        return dashboard.layout
+        return tables.layout
     if pathname == '/models':
         return dashboard.layout
     if pathname == '/about':
