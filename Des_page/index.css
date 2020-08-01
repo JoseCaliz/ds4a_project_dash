@@ -9,7 +9,7 @@ body {
 .title {
   padding: 20px;
   font-weight: bold !important;
-  font-size: 25px;
+  font-size: 45px; /* general context*/
 }
 
 p {
@@ -43,13 +43,13 @@ ul > li {
   color: white;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
+  font-size: 78px; /* general title */
   text-align: center;
   font-weight: bold;
 }
 
 .header__team {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: normal;
   color: white;
 }
@@ -100,7 +100,7 @@ ul > li {
   padding-right: 10px;
   padding-left: 10px;
   display: flex;
-  font-size: 20px;
+  font-size: 40px;
   align-items: center;
   justify-content: center;
   display: flex;
