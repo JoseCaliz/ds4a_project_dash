@@ -93,7 +93,7 @@ with open("./data/data.pkl", "rb") as a_file:
 
 clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
-event_probs = pd.read_csv('./data/prob.csv')
+event_probs = pd.read_csv('./data/prob.txt')
 #data = data_orig.copy()
 #testeo = pd.DataFrame(data, index=[0])
 
@@ -159,8 +159,8 @@ agerangedict = {
 
 
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
-matcher = pd.read_csv(r'./data/matcher.csv', encoding='UTF8')
-matcher2 = pd.read_csv(r'./data/matcherloca.csv', encoding='UTF8')
+matcher = pd.read_csv(r'./data/matcher.txt', encoding='UTF8')
+matcher2 = pd.read_csv(r'./data/matcherloca.txt', encoding='UTF8')
 mapper = matcher.set_index('barrio_original').to_dict()['nom_match']
 mapper2 = matcher2.set_index('bar_orig').to_dict()['loc_match']
 df['mapid'] = df.barrio.map(mapper)
