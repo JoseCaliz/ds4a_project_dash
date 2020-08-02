@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
 import dash_daq as daq
+import dash_table
 from server import app
 import pandas as pd
 import plotly.express as px
@@ -12,8 +13,11 @@ from server import db
 import plotly.graph_objects as go
 import json
 import joblib
+import pickle
+import numpy as np
 
 engine = db.engine
+
 
 mapa_query ='''
 SELECT barrio, extract(year FROM fecha) AS year, sexo, 'robbery' AS crime, COUNT(barrio) AS total
@@ -49,17 +53,26 @@ with open('D:/Barrios_Bog/loca.geojson', encoding='utf8') as geo:
 with open('D:/Barrios_Bog/prueba1.txt', encoding='utf8') as test:
     testjson = json.loads(test.read())
 
-testjson2 = testjson.copy()
-query = ['COMPARTIR', '(20, 29]', 'MASCULINO', '20']
-base = ['barrio_','edad_', 'sexo_', 'hora_']
-keystest = [i + j for i, j in zip(base, query)]
-for key in keystest:
-    testjson2[key] = 1
+with open("./data/data.pkl", "rb") as a_file:
+    data_orig = pickle.load(a_file)
 
-test = pd.DataFrame(testjson2, index=[0])
+clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
-clf = joblib.load('./data/naive_bayes.joblib.pkl')
+event_probs = pd.read_csv('./data/prob.csv')
+#data = data_orig.copy()
+#testeo = pd.DataFrame(data, index=[0])
+
+#test = testeo.copy()
+# query = ['COMPARTIR', '(20, 29]', 'MASCULINO', '20']
+# base = ['barrio_','edad_', 'sexo_', 'hora_']
+# keystest = [i + j for i, j in zip(base, query)]
+# for key in keystest:
+#     testjson2[key] = 1
 #
+# test = pd.DataFrame(testjson2, index=[0])
+#
+# clf = joblib.load('./data/naive_bayes.joblib.pkl')
+# #
 # def predict_prob(barrio,edad,gender,hora):
 #     que = [barrio,edad,gender,hora]
 #     base = ['barrio_','edad_', 'sexo_', 'hora_']
@@ -109,9 +122,6 @@ agerangedict = {
 '90-99':'(90, 99]'
 }
 
-
-print(agedict[30])
-print(type(agedict[30]))
 
 
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
@@ -241,12 +251,13 @@ Logo_Img=html.Div(
                 html.Img(
                     src=app.get_asset_url("logo.png"),
                     id="logo-image",
-                    height=130
+                    #height='auto',
+                    style={'height':'15vh'}
 
 
                 )
 
-            ], style={'textAlign': 'center'}
+            ], style={'textAlign': 'center'}#, 'height':'15hv'}
         )
 
 
@@ -368,8 +379,8 @@ dbc.Row(
                                         html.Hr(),
                                         html.H5("Hour:"),
                                         dropdownhour,
-                                        html.Br(),
-                                        html.Button('Submit', id='submit-val', n_clicks=0),]
+
+                                        html.Button('Submit', id='submit-val')]
                                 , width=3, style={'height': '100%','paddingTop':'0'}),
 
 
@@ -383,16 +394,20 @@ dbc.Row(
                                             thirdcrime
 
                                             ])
-                                                ],style={'height': '100%'})
+                                                ],style={'height': '100%','paddingLeft':'0'})
 
-                                        ], style={'height': '45%'}),
+                                        ], style={'height': '45%', 'width':'100%', 'marginLeft': '0', 'paddingLeft': '0'
+                                        }),
                                     dbc.Row([
-                                        dbc.Col([
-                                                ],style={'height': '100%'})
-                                        ], style={'height': '55%'})
+                                        dbc.Col([dash_table.DataTable(id='table', style_as_list_view=True)
+                                                ],style={'height': '100%','paddingTop':'0' , 'width':'100%'}),
+                                        dbc.Col([dash_table.DataTable(id='table2', style_as_list_view=True)
+                                                ],style={'height': '100%','paddingTop':'0', 'width':'100%'})
+                                        ], style={'height': '55%', 'width':'100%', 'marginLeft': '0', 'paddingLeft': '0'},
+                                            no_gutters=True)
 
 
-                                    ], style={'height': '100%'}),
+                                    ], style={'height': '100%','paddingTop':'25px'}),
                             ], no_gutters=True,  style={'height': '95%'}
                             ),
 
@@ -410,7 +425,7 @@ dbc.Row(
 
                         dcc.Graph(figure=fig4, id='Gender_bar', className="h-100"),#className="h-100")
 
-                        ], style={'height': '100%'}),
+                        ], style={'height': '100%','paddingTop':'10px'}),
                     ],justify='end',align='end', no_gutters=True, style={'height': '40%'}),
                 ], width=5, style={"height": "100%"}),
                 dbc.Col(
@@ -546,13 +561,17 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
 
 
 @app.callback(
-           [#Output('dom', 'value'),
+           [
             Output('firstcrime', 'value'),
-            Output('secondcrime', 'value')],
-            # Output('mur', 'value'),
-            # Output('car', 'value'),
-            # Output('mot', 'value'),
-            # Output('thr', 'value')],
+            Output('secondcrime', 'value'),
+            Output('thirdcrime', 'value'),
+            Output('firstcrime', 'label'),
+            Output('secondcrime', 'label'),
+            Output('thirdcrime', 'label'),
+            Output('table', 'data'),
+            Output('table', 'columns'),],
+
+
             [Input('submit-val', 'n_clicks')],
             [State('ngbr_dropdown', 'value'),
             State('age_dropdown', 'value'),
@@ -560,14 +579,62 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
             State('hour_dropdown', 'value')]
 )
 def predict_prob(bot,barrio,edad,gender,hora):
-    que = [barrio,edad,gender,str(hora)]
-    base = ['barrio_','edad_', 'sexo_', 'hora_']
-    keys = [i + j for i, j in zip(base, que)]
-    data = testjson.copy()
-    for key in keys:
-        data[key] = 1
-    test = pd.DataFrame(data, index=[0])
-    probabilities = clf.predict_proba(test)
-    probstring = ['Murder:',probabilities[0,0]],['Personal Injuries:', probabilities[0,1]]
+    #print(bot,barrio,edad,gender,hora)
 
-    return [probabilities[0,0]*100,probabilities[0,1]*100]
+    if bot != 0:
+
+        data = data_orig.copy()
+        que = [barrio,edad,gender,str(float(hora))]
+        base = ['barrio_','edad_', 'sexo_', 'hora_']
+        keys = [i + j for i, j in zip(base, que)]
+        for key in keys:
+            data[key] = 1.0
+        test = pd.DataFrame(data, index=[0])
+
+
+        probabilities = clf.predict_proba(test)
+        a = ['Murder',round(probabilities[0,0],4)]
+        b = ['Pers. Injur.', round(probabilities[0,1],4)]
+        c = ['Robbery', round(probabilities[0,2],4)]
+        d = ['Sex. Offences', round(probabilities[0,3],4)]
+        probdf = pd.DataFrame([a,b,c,d],columns=['crime','probability'])
+        ordered = probdf.sort_values('probability',ascending=False).reset_index(drop=True)
+        columns = [{"name": i, "id": i} for i in ordered.columns]
+        #probstring = ['Murder:',probabilities[0,0]],['Personal Injuries:', probabilities[0,1]]
+        #print([probabilities[0,0]*100,probabilities[0,1]*100])
+        return [ordered.probability.at[0]*100,ordered.probability.at[1]*100,
+                ordered.probability.at[2]*100,ordered.crime.at[0],
+                ordered.crime.at[1],ordered.crime.at[2],
+                ordered.to_dict('records'),columns]
+    else:
+        return[66.6,69.6,45.6,'Nothing to see here','FFF']
+
+
+@app.callback(
+           [
+
+            Output('table2', 'data'),
+            Output('table2', 'columns'),],
+
+
+            [Input('submit-val', 'n_clicks')],
+
+)
+def populate_prob(click):
+    #print(bot,barrio,edad,gender,hora)
+
+    if click != 0:
+
+        x = np.random.choice(15,4, replace=False)
+        x.sort()
+        eve = event_probs.iloc[x]
+        eve = eve.round(decimals=4)
+        columns = [{"name": i, "id": i} for i in eve.columns]
+
+        return [eve.to_dict('records'),columns]
+    else:
+        columns = [{"name": 'Wait', "id": 'Wait'},
+                    {"name": 'for it', "id": 'for it'}]
+        data2 = [{'Wait': 'Wait', 'for it': 0.0078},
+                 {'Wait': 'for it', 'for it': 0.0123}]
+        return[data2,columns]
