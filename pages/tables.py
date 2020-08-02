@@ -22,7 +22,7 @@ layout=html.Div(children=[
 **National Police of Colombia** provide a serie of datasets that covers *threats, sexual crimes, murders, murders in traffic accidents, theft, burglary and robbery, shoplifting, personal injuries and domestic violence.*
 The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva) 
 '''
-            ), width=6, align='center', style={'text-align': 'left'}),
+            ), width=6, align='center', style={'text-align': 'center'}),
     ], justify='center'),
 
     dbc.Row([
@@ -30,7 +30,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
             '''
             ## **THEFT - JULY TO SEPTEMBER 2019**
             '''
-            ), width=6, align='center', style={'text-align': 'left'})
+            ), width=6, align='center', style={'text-align': 'center'})
     ], justify='center'),
 
     dbc.Row([
@@ -40,12 +40,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
                         data=df2.to_dict('records'),
                         filter_action='native',
                         page_size=10,
-                        style_data={
-                            'width': '150px', 'minWidth': '50px', 'maxWidth': '150px',
-                            'overflow': 'hidden',
-                            'textOverflow': 'ellipsis',
-                        }
-                    ), width={"offset": 1}
+                    ), width=8
         ),
     ], justify='center'),
 
@@ -69,7 +64,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
                             'overflow': 'hidden',
                             'textOverflow': 'ellipsis',
                         }
-                    ), width={"offset": 1}
+                    ), width=8
         ),
     ], justify='center'),
 
@@ -93,7 +88,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
                             'overflow': 'hidden',
                             'textOverflow': 'ellipsis',
                         }
-                    ), width={"offset": 1}
+                    ), width=8
         ),
     ], justify='center'),
 
@@ -117,7 +112,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
                             'overflow': 'hidden',
                             'textOverflow': 'ellipsis',
                         }
-                    ), width={"offset": 1}
+                    ), width=8
         ),
     ], justify='center'),
 
@@ -141,7 +136,7 @@ The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-c
                             'overflow': 'hidden',
                             'textOverflow': 'ellipsis',
                         }
-                    ), width={"offset": 1}
+                    ), width=8
         ),
     ], justify='center')
 
