@@ -62,8 +62,7 @@ def predict_time_series(data, crimes):
             )[1:]
             
             for i in date_to_pred:
-                print(data_temp.iloc[-2:].num_cases)
-                pred = models[crime].predict(data_temp.iloc[-3:].num_cases)[0]
+                pred = models[crime].predict(data_temp.iloc[-4:].num_cases)[0]
                 insert = {'ds':i, 'num_cases':pred, 'is_pred':True,
                           'crime':crime}
 

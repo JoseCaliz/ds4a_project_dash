@@ -397,22 +397,29 @@ fig4 = px.bar(df18, x="year", y="total",
              )
 
 fig4.update_layout(
-    paper_bgcolor="#fffff0",
-    plot_bgcolor='#fffff0',
+    # paper_bgcolor="#fffff0",
+    # plot_bgcolor='#fffff0',
+    paper_bgcolor="LightGray",
     margin={"r":5,"t":10,"l":5,"b":0},
     legend={'x':0}
 )
 
-Line_fig=px.line(
-    dfline[dfline.final_sunday >= '2019-08-01'],
-    x="final_sunday",
+dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
+df_to_plot = dfline_updated[
+    (dfline_updated.ds >= '2019-08-01')
+].copy()
+
+Line_fig = px.line(
+    df_to_plot,
+    x="ds",
     y="num_cases",
-    color="crime"
+    color="crime",
+    line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
 )
 
 Line_fig.update_layout(
     title='Total Crimes in Selected Locality',
-    paper_bgcolor="#fffff0"
+    paper_bgcolor="LightGray",
 )
 
 layout = dbc.Container(children=[
@@ -596,10 +603,17 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
                  color='sexo',# barmode='group',
                  facet_col='crime',labels={'sexo':'Sexo','crime':'Crime','total':'Total','year':'Year'}
                  )
-    fig5.update_layout(paper_bgcolor="#fffff0",margin={"r":5,"t":5,"l":5,"b":0},legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
+    fig5.update_layout(
+        # plot_bgcolor='LightGray',
+        paper_bgcolor="LightGray",
+        margin={"r":5,"t":5,"l":5,"b":0},
+        legend={'x':0,'bgcolor':'rgba(0,0,0,0)'}
+    )
 
-    # dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
-    dfline_updated = predict_time_series(dfline, crime_drop)
+    # dfline_updated = predict_time_series(dfline, crime_drop)
+    # dfline_updated.to_pickle('./data/dfline_updated.pkl')
+    
+    dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
     df_to_plot = dfline_updated[
         (dfline_updated.ds >= '2019-08-01') &
         (dfline_updated.crime.isin(crime_drop))
@@ -620,8 +634,8 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
             'xanchor': 'center',
             'yanchor': 'top'
         },
-        paper_bgcolor="#fffff0",
-        plot_bgcolor='#fffff0',
+        paper_bgcolor="LightGray",
+        # plot_bgcolor='LightGray',
         margin={"r":5,"t":10,"l":5,"b":0},
         legend={'x':0}
     )
