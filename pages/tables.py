@@ -17,7 +17,18 @@ layout=html.Div(children=[
     dbc.Row([
         dbc.Col(dcc.Markdown(
             '''
-            # **THEFT - AUGUST 2019**
+            # **DATASET**
+            
+            **National Police of Colombia** provide a serie of datasets that covers *threats, sexual crimes, murders, murders in traffic accidents, theft, burglary and robbery, shoplifting, personal injuries and domestic violence.*
+            The data can be found [here](https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva) 
+            '''
+            ), width=6, align='center', style={'text-align': 'left'}),
+    ], justify='center'),
+
+    dbc.Row([
+        dbc.Col(dcc.Markdown(
+            '''
+            # **THEFT - JULY TO SEPTEMBER 2019**
             '''
             ), width=6, align='center', style={'text-align': 'left'})
     ], justify='center'),
@@ -41,7 +52,7 @@ layout=html.Div(children=[
     dbc.Row([
         dbc.Col(dcc.Markdown(
             '''
-            # **DOMESTIC VIOLENCE - AUGUST 2019**
+            # **DOMESTIC VIOLENCE - JULY TO SEPTEMBER 2019**
             '''
             ), width=6, align='center', style={'text-align': 'left'})
     ], justify='center'),
@@ -65,7 +76,7 @@ layout=html.Div(children=[
     dbc.Row([
         dbc.Col(dcc.Markdown(
             '''
-            # **SEXUAL CRIMES - AUGUST 2019**
+            # **SEXUAL CRIMES - JULY TO SEPTEMBER 2019**
             '''
             ), width=6, align='center', style={'text-align': 'left'})
     ], justify='center'),
@@ -89,7 +100,7 @@ layout=html.Div(children=[
     dbc.Row([
         dbc.Col(dcc.Markdown(
             '''
-            # **PERSONAL INJURIES - AUGUST 2019**
+            # **PERSONAL INJURIES - JULY TO SEPTEMBER 2019**
             '''
             ), width=6, align='center', style={'text-align': 'left'})
     ], justify='center'),
@@ -113,7 +124,7 @@ layout=html.Div(children=[
     dbc.Row([
         dbc.Col(dcc.Markdown(
             '''
-            # **MURDERS - AUGUST 2019**
+            # **MURDERS - JULY TO SEPTEMBER 2019**
             '''
             ), width=6, align='center', style={'text-align': 'left'})
     ], justify='center'),
