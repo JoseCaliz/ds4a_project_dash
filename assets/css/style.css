@@ -1098,15 +1098,15 @@
     box-sizing: border-box;
 }
 
-*[data-dash-is-loading="true"]:not([id="Crime_map"]){
-    visibility: hidden;
-}
+/**[data-dash-is-loading="true"]:not([id="Crime_map"]){*/
+    /*visibility: hidden;*/
+/*}*/
 
-*[data-dash-is-loading="true"]:not([id="Crime_map"])::before{
-    content: url("/assets/loading.gif");
-    margin: auto;
-    width: 100%;
-    height:20px;
-    display: inline-block;
-    visibility: visible;
-}
+/**[data-dash-is-loading="true"]:not([id="Crime_map"])::before{*/
+    /*content: url("/assets/loading.gif");*/
+    /*margin: auto;*/
+    /*width: 100%;*/
+    /*height:20px;*/
+    /*display: inline-block;*/
+    /*visibility: visible;*/
+/*}*/
