@@ -16,7 +16,7 @@ layout = html.Div(children=[
         
         html.Article(className="context__row",children=[
             html.Div(className="context__col",children=[
-                html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img1t.png")
+                html.Img(src="./assets/images/datafolio/img1t.png")
             ]),
             html.Div(className="context__col",children=[
                 html.P(children=[
@@ -35,13 +35,13 @@ layout = html.Div(children=[
                 ])
             ]),
             html.Div(className="context__col",children=[
-                html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img2t.png")
+                html.Img(src="./assets/images/datafolio/img2t.png")
             ])
         ]),
 
         html.Article(className="context__row",children=[
             html.Div(className="context__col",children=[
-                 html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img3t.png")
+                 html.Img(src="./assets/images/datafolio/img3t.png")
             ]),
             html.Div(className="context__col",children=[
                 html.P("In 2019 in Colombia it was reported:"),
@@ -99,7 +99,7 @@ layout = html.Div(children=[
             ]),
 
             html.Div(className="context__col",children=[
-                html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img4t.png")
+                html.Img(src="./assets/images/datafolio/img4t.png")
             ])
         ]),
 
@@ -108,7 +108,7 @@ layout = html.Div(children=[
 
         html.Article(className="context__row",children=[
             html.Div(className="context__col",children=[
-                html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img5t.png")
+                html.Img(src="./assets/images/datafolio/img5t.png")
             ]),
             html.Div(className="context__col",children=[
                 html.P(children=[
@@ -147,7 +147,7 @@ layout = html.Div(children=[
                 ])
             ]),
             html.Div(className="context__col",children=[
-                html.Img(src="https://raw.githubusercontent.com/JoseCaliz/ds4a_project_dash/master/assets/images/datafolio/img6t.png")
+                html.Img(src="./assets/images/datafolio/img6t.png")
             ])
         ]),      
     ])
