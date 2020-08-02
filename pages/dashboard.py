@@ -18,6 +18,21 @@ import numpy as np
 
 engine = db.engine
 
+delitos = [
+    'violencia_intrafamiliar',
+    'homicidios',
+    'hurto_automotores',
+    'hurto_motocicletas',
+    'del_sexuales',
+    'hurto_personas'
+]
+
+translate_crimes={
+    'hurto_personas':'robbery',
+    'violencia_intrafamiliar':'dom_viol',
+    'del_sexuales':'sex_off',
+    'homicidios':'murder'
+}
 
 mapa_query ='''
 SELECT barrio, extract(year FROM fecha) AS year, sexo, 'robbery' AS crime, COUNT(barrio) AS total
@@ -45,12 +60,32 @@ SELECT barrio, extract(year FROM fecha) AS year, sexo, 'sex_off' AS crime, COUNT
 FROM del_sexuales
 WHERE municipio LIKE 'BOGOTÁ D.C.'
 GROUP BY barrio, year, sexo
-
 '''
-with open('D:/Barrios_Bog/loca.geojson', encoding='utf8') as geo:
+
+query_time_seies = '''
+SELECT
+    FLOOR(row_num/ 2) as week,
+    (max(weekly) + interval '14 day')::date as final_sunday,
+    sum(total_count) as num_cases
+FROM (
+    SELECT
+        date_trunc('week', fecha) AS weekly,
+        row_number() over (order by date_trunc('week', fecha)) - 1 AS row_num,
+        COUNT(*)  total_count
+    FROM {}
+    WHERE fecha >= '2015-12-21'
+    AND municipio like 'BOGO%%'
+    GROUP BY 1
+    ORDER BY 1
+) t
+GROUP BY 1
+ORDER BY 1
+'''
+
+with open('./data/loca.geojson', encoding='utf8') as geo:
     geojson = json.loads(geo.read())
 
-with open('D:/Barrios_Bog/prueba1.txt', encoding='utf8') as test:
+with open('./data/prueba1.txt', encoding='utf8') as test:
     testjson = json.loads(test.read())
 
 with open("./data/data.pkl", "rb") as a_file:
@@ -123,17 +158,25 @@ agerangedict = {
 }
 
 
-
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
-matcher = pd.read_csv(r'C:\Users\Admin\Desktop\matcher.csv', encoding='UTF8')
-matcher2 = pd.read_csv(r'C:/Users/Admin/Desktop/matcherloca.csv', encoding='UTF8')
+matcher = pd.read_csv(r'./data/matcher.csv', encoding='UTF8')
+matcher2 = pd.read_csv(r'./data/matcherloca.csv', encoding='UTF8')
 mapper = matcher.set_index('barrio_original').to_dict()['nom_match']
 mapper2 = matcher2.set_index('bar_orig').to_dict()['loc_match']
 df['mapid'] = df.barrio.map(mapper)
 df['locid'] = df.mapid.map(mapper2)
 
 dff=df.groupby(['mapid','year','crime']).sum().reset_index()
-dfloca=df.groupby(['locid','year','crime']).sum().reset_index()
+dfloca = df.groupby(['locid','year','crime']).sum().reset_index()
+
+dfline = pd.concat([
+    pd.read_sql(query_time_seies.format(i), engine).assign(
+        crime=translate_crimes[i]
+    )
+    for i in delitos if i in translate_crimes.keys()
+])
+
+dfline.final_sunday = pd.to_datetime(dfline.final_sunday)
 
 crimes=['robbery','dom_viol','sex_off','murder']
 year = 2012
@@ -143,37 +186,46 @@ barrio=['PASADENA']
 dfgender = df.groupby(['mapid','year','crime','sexo']).sum().reset_index()
 dfgender2 = df.groupby(['locid','year','crime','sexo']).sum().reset_index()
 
-
-df18 = dfgender2[(dfgender2['crime'].isin(crimes))&(dfgender2['locid'].isin(loca_one))]
-
-
+df18 = dfgender2[
+    (dfgender2['crime'].isin(crimes))&(dfgender2['locid'].isin(loca_one))
+]
 
 dfmap = dfloca[(dfloca['year']==2018)]#&(dfloca['crime'].isin(crimes))]
 dfmap = dfmap.groupby('locid').sum().reset_index()
 
 #Create the map:
-Map_fig = px.choropleth_mapbox(dfmap,
-        locations='locid',
-        color='total',
-        featureidkey="properties.LocNombre",
-        geojson=geojson,
-        zoom=11,
-        mapbox_style="stamen-toner",
-        center={"lat": 4.655115, "lon": -74.055404}, #Center not too close to the actual center
+Map_fig = px.choropleth_mapbox(
+    dfmap,
+    locations='locid',
+    color='total',
+    featureidkey="properties.LocNombre",
+    geojson=geojson,
+    zoom=11,
+    mapbox_style="stamen-toner",
 
-        color_continuous_scale="portland",         #Color Scheme
-        opacity=0.5,
-        title='Total crimes in Bogotá by Neighborhood'
-        )
-Map_fig.update_layout(title='Total crimes in Bogotá by Neighborhood',paper_bgcolor="#fffff0",margin={"r":0,"t":0,"l":20,"b":0},mapbox=dict(bearing=95))
+    #Center not too close to the actual center
+    center={"lat": 4.655115, "lon": -74.055404},
+    color_continuous_scale="portland",
+    opacity=0.5,
+    title='Total crimes in Bogotá by Neighborhood'
+)
 
-hidden_div = html.Div(className='current_location',
-                      children='home',
-                      hidden=True)
+Map_fig.update_layout(
+    title='Total crimes in Bogotá by Neighborhood',
+    paper_bgcolor="#fffff0",
+    margin={"r":0,"t":0,"l":20,"b":0},
+    mapbox=dict(bearing=95)
+)
+
+hidden_div = html.Div(
+    className='current_location',
+    children='home',
+    hidden=True
+)
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 #Creating dropdown
-
 ys = dff.year.unique()
 
 dropdown=dcc.Dropdown(
@@ -184,7 +236,14 @@ dropdown=dcc.Dropdown(
         multi=False
         )
 
-values={'Robbery and theft':'robbery','Domestic violence':'dom_viol','Sex offenses':'sex_off','Manslaughter, Murder':'murder'}
+values={
+    'Robbery and theft':'robbery',
+    'Domestic violence':'dom_viol',
+    'Sex offenses':'sex_off',
+    'Manslaughter, Murder':'murder'
+}
+
+
 revval = {value : key for (key, value) in values.items()}
 dropdowncrime=dcc.Dropdown(
         id="crime_dropdown",
@@ -192,18 +251,17 @@ dropdowncrime=dcc.Dropdown(
         value=["sex_off",'murder'],
         placeholder="Select a Crime",
         multi=True
-        )
+)
 
 localidades=dfloca.locid.unique()
 
 dropdownloca=dcc.Dropdown(
         id="loca_dropdown",
-        options=[{"label":loca, "value":loca} for loca in localidades],#+[{"label": 'ALL', "value":localidades}],
+        options=[{"label":loca, "value":loca} for loca in localidades],
         value='SUBA',
         placeholder="Select a Locality",
         multi=False
-        )
-
+)
 
 ngbr=dff.mapid.unique()
 
@@ -245,6 +303,20 @@ dropdownhour=dcc.Dropdown(
         )
 
 
+#Loading an image
+Addict_Img=html.Div(
+            children=[
+                html.Img(
+                    src=app.get_asset_url("addict-img.png"),
+                    id="addict-image",
+                    width=200,
+                    height=200,
+
+                )
+
+            ], style={'textAlign': 'center'}
+        )
+
 #Loading the logo
 Logo_Img=html.Div(
             children=[
@@ -260,6 +332,8 @@ Logo_Img=html.Div(
             ], style={'textAlign': 'center'}#, 'height':'15hv'}
         )
 
+#Dummy graph for dashboard design
+#dummygraph.update_layout(paper_bgcolor="#fffff0")
 
 #Now the gauge graph
 # gaugegraph = go.Figure(go.Indicator(
@@ -315,32 +389,39 @@ thirdcrime = daq.Gauge(
     min=0,
     )
 
-
-
-
 fig4 = px.bar(df18, x="year", y="total",
              color='sexo',# barmode='group',
              facet_col='crime'
              )
-fig4.update_layout(paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',margin={"r":5,"t":10,"l":5,"b":0},legend={'x':0})
 
-dfline = dfloca[(dfloca['crime'].isin(crimes))&(dfloca['locid'].isin(loca_one))]
-Line_fig=px.line(dfline,x="year",y="total", color="crime")
-Line_fig.update_layout(title='Total Crimes in Selected Locality',paper_bgcolor="#fffff0")
+fig4.update_layout(
+    paper_bgcolor="#fffff0",
+    plot_bgcolor='#fffff0',
+    margin={"r":5,"t":10,"l":5,"b":0},
+    legend={'x':0}
+)
 
+Line_fig=px.line(
+    dfline[dfline.final_sunday >= '2019-08-01'],
+    x="final_sunday",
+    y="num_cases",
+    color="crime"
+)
 
+Line_fig.update_layout(
+    title='Total Crimes in Selected Locality',
+    paper_bgcolor="#fffff0"
+)
 
 layout = dbc.Container(children=[
 
+dbc.Row([
+    dbc.Col(dropdowncrime, width=6, lg=3),
+    dbc.Col(dropdownloca, width=6, lg=3),
+    dbc.Col(dropdown, width=6, lg=3),
+    #dbc.Col(html.Div("I wonder what to put here"), width=6, lg=3),
+    ],justify='center',style={"height": "5%"}),
 
-dbc.Row(
-            [
-                dbc.Col(dropdowncrime, width=6, lg=3),
-                dbc.Col(dropdownloca, width=6, lg=3),
-                dbc.Col(dropdown, width=6, lg=3),
-                #dbc.Col(html.Div("I wonder what to put here"), width=6, lg=3),
-            ],justify='center',style={"height": "5%"}
-        ),
 dbc.Row(
             [
 
@@ -410,19 +491,12 @@ dbc.Row(
                                     ], style={'height': '100%','paddingTop':'25px'}),
                             ], no_gutters=True,  style={'height': '95%'}
                             ),
-
-
-
-
-
                         ], style={'height': '100%'}),# md=12),
                     ], style={'height': '60%'}),
             #    ], width=12),
 
                     dbc.Row([
                         dbc.Col([
-
-
                         dcc.Graph(figure=fig4, id='Gender_bar', className="h-100"),#className="h-100")
 
                         ], style={'height': '100%','paddingTop':'10px'}),
@@ -447,18 +521,9 @@ dbc.Row(
 
 
                             ], width=6, style={"height": "100%"}),
-
-
-
-
-
             ],justify='center',style={"height": "95%"}
         )
-
-
 ],style={"height": "100vh"},fluid=True)
-
-
 
 ##################################################################
 #Let's include here the callbacks                                #
@@ -472,7 +537,9 @@ dbc.Row(
     ],
 )
 def update_map_plot(crime_drop,year_drop):
-    dfmap = dfloca[(dfloca['year']==year_drop)&(dfloca['crime'].isin(crime_drop))]
+    dfmap = dfloca[
+        (dfloca['year']==year_drop) & (dfloca['crime'].isin(crime_drop))
+    ]
     dfmap = dfmap.groupby('locid').sum().reset_index()
     Map_fig2 = px.choropleth_mapbox(dfmap,
             locations='locid',
@@ -487,12 +554,12 @@ def update_map_plot(crime_drop,year_drop):
             opacity=0.5,
             #title='Total crimes in Colombia'
             )
-    Map_fig2.update_layout(title='Total Crimes per Locality',margin={"r":0,"t":0,"l":5,"b":0},
-                            paper_bgcolor="rgba(0,0,0,0)",mapbox=dict(bearing=95))
 
+    Map_fig2.update_layout(
+        title='Total Crimes per Locality',margin={"r":0,"t":0,"l":5,"b":0},
+        paper_bgcolor="rgba(0,0,0,0)",mapbox=dict(bearing=95)
+    )
     return Map_fig2
-
-
 
 @app.callback(
     Output('loca_dropdown','value'),
@@ -508,29 +575,15 @@ def click_saver(clickData,state):
     if clickData is None:
         raise PreventUpdate
 
-    # print(clickData)
-    # print(state)
     newstate=clickData['points'][0]['location']
     #state.append(clickData['points'][0]['location'])
-
-
     return newstate
 
 
 #Update the gender chart
-
 @app.callback(
-    [
-
-    Output('Gender_bar', 'figure'),
-        Output('predict_bar', 'figure')
-
-
-    ],
-    [
-        Input("crime_dropdown","value"),
-        Input("loca_dropdown", "value")
-    ],
+    [Output('Gender_bar', 'figure'), Output('predict_bar', 'figure')],
+    [Input("crime_dropdown","value"),Input("loca_dropdown", "value")],
 )
 def update_gender_and_line_plot(crime_drop,ngbr_drop):
     nghbrhd=[]
@@ -543,17 +596,30 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
                  )
     fig5.update_layout(paper_bgcolor="#fffff0",margin={"r":5,"t":5,"l":5,"b":0},legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
 
-    dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
-    Line_fig2=px.line(dfline,x="year",y="total", color="crime")
-    Line_fig2.update_layout(title={ 'text': 'Total Crimes in {}'.format(nghbrhd[0]),
-                            'y':0.5,
-                            'x':0.5,
-                            'xanchor': 'center',
-                            'yanchor': 'top'},
-                            paper_bgcolor="#fffff0",plot_bgcolor='#fffff0',
-                            margin={"r":5,"t":10,"l":5,"b":0},legend={'x':0})
+    # dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
+    Line_fig2 = px.line(
+        dfline[
+            (dfline.final_sunday >= '2019-08-01') &
+            (dfline.crime.isin(crime_drop))
+        ],
+        x="final_sunday",
+        y="num_cases",
+        color="crime"
+    )
 
-
+    Line_fig2.update_layout(
+        title={
+            'text': 'Total Crimes in {}'.format(nghbrhd[0]),
+            'y':0.5,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
+        paper_bgcolor="#fffff0",
+        plot_bgcolor='#fffff0',
+        margin={"r":5,"t":10,"l":5,"b":0},
+        legend={'x':0}
+    )
 
     return [fig5, Line_fig2]
 

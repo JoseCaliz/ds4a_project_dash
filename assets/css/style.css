@@ -1097,3 +1097,16 @@
     cursor: pointer;
     box-sizing: border-box;
 }
+
+*[data-dash-is-loading="true"]:not([id="Crime_map"]){
+    visibility: hidden;
+}
+
+*[data-dash-is-loading="true"]:not([id="Crime_map"])::before{
+    content: '';
+    width: 16px;
+    height:20px;
+    background-image: url('./assets/loading.gif');
+    display: inline-block;
+    visibility: visible;
+}

@@ -1,0 +1,7 @@
+Crime,Baseline,D,Baseline,5D,Baseline,W,Baseline,2W
+Domestic Violence,0.39,0.35,0.65,0.42,0.72,0.47,2.06,1.45
+Murders,inf,inf,0.39,0.31,0.31,0.27,0.45,0.36
+Car Theft,inf,inf,0.32,0.33,0.27,0.3,0.64,0.68
+Motorcycle Theft,0.67,0.65,0.47,0.49,0.32,0.33,0.81,0.89
+Sexual Crimes,inf,inf,1.33,1.67,0.93,1.14,2.15,3.1
+Robbery,0.25,0.18,0.13,0.11,0.1,0.09,0.22,0.26
