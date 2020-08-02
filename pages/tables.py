@@ -7,11 +7,11 @@ import dash_core_components as dcc
 
 import pandas as pd
 
-df2 = pd.read_csv(r'C:\Users\CAROL\Documents\Team79_git\ds4a_project_dash\data\hurto_personas.csv')
-df3 = pd.read_csv(r'C:\Users\CAROL\Documents\Team79_git\ds4a_project_dash\data\violencia_intrafamiliar.csv')
-df4 = pd.read_csv(r'C:\Users\CAROL\Documents\Team79_git\ds4a_project_dash\data\del_sexuales.csv')
-df5 = pd.read_csv(r'C:\Users\CAROL\Documents\Team79_git\ds4a_project_dash\data\lesiones_personales.csv')
-df6 = pd.read_csv(r'C:\Users\CAROL\Documents\Team79_git\ds4a_project_dash\data\homicidios.csv')
+df2 = pd.read_csv(r'./data/hurto_personas.csv')
+df3 = pd.read_csv(r'./data/violencia_intrafamiliar.csv')
+df4 = pd.read_csv(r'./data/del_sexuales.csv')
+df5 = pd.read_csv(r'./data/lesiones_personales.csv')
+df6 = pd.read_csv(r'./data/homicidios.csv')
 
 layout=html.Div(children=[
     dbc.Row([

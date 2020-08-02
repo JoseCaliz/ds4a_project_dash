@@ -34,9 +34,11 @@ def display_page(pathname):
     if pathname == '/tables':
         return tables.layout
     if pathname == '/models':
-        return context.layout
+        return models.layout
     if pathname == '/about':
         return about.layout
+    if pathname == '/context':
+        return context.layout
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -60,6 +62,7 @@ def update_index_dashboard():
     full_template_dashboard = full_template_dashboard.replace('{tables_div}', '')
     full_template_dashboard = full_template_dashboard.replace('{about_div}', '')
     full_template_dashboard = full_template_dashboard.replace('{info_div}', '')
+    full_template_dashboard = full_template_dashboard.replace('{context_div}', '')
     app.index_string = full_template_dashboard
     return app.index()
 
@@ -72,6 +75,7 @@ def update_index_model():
     full_template_models = full_template_models.replace('{tables_div}', '')
     full_template_models = full_template_models.replace('{about_div}', '')
     full_template_models = full_template_models.replace('{info_div}', '')
+    full_template_models = full_template_models.replace('{context_div}', '')
     app.index_string = full_template_models
     return app.index()
 
@@ -84,6 +88,7 @@ def update_index_tables():
     full_template_tables = full_template_tables.replace('{tables_div}', 'active')
     full_template_tables = full_template_tables.replace('{about_div}', '')
     full_template_tables = full_template_tables.replace('{info_div}', '')
+    full_template_tables = full_template_tables.replace('{context_div}', '')
     app.index_string = full_template_tables
     return app.index()
 
@@ -96,6 +101,7 @@ def update_index_about():
     full_template_about = full_template_about.replace('{tables_div}', '')
     full_template_about = full_template_about.replace('{about_div}', 'active')
     full_template_about = full_template_about.replace('{info_div}', '')
+    full_template_about = full_template_about.replace('{context_div}', '')
     app.index_string = full_template_about
     return app.index()
 
@@ -108,9 +114,23 @@ def update_index_info():
     full_template_info = full_template_info.replace('{tables_div}', '')
     full_template_info = full_template_info.replace('{about_div}', '')
     full_template_info = full_template_info.replace('{info_div}', 'active')
+    full_template_info = full_template_info.replace('{contexi_div}', '')
     app.index_string = full_template_info
     return app.index()
 
+@server.route('/context')
+def update_index_context():
+    app.title = 'Context'
+    full_template_context = full_template_vanilla
+    full_template_context = full_template_context.replace('{dashboard_div}', '')
+    full_template_context = full_template_context.replace('{models_div}', '')
+    full_template_context = full_template_context.replace('{tables_div}', '')
+    full_template_context = full_template_context.replace('{about_div}', '')
+    full_template_context = full_template_context.replace('{info_div}', '')
+    full_template_context = full_template_context.replace('{context_div}', 'active')
+    app.index_string = full_template_context
+
+    return app.index()
 if __name__ == '__main__':
     app.run_server(debug=True)
 

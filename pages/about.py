@@ -13,9 +13,8 @@ layout = html.Div(children=[
     dbc.Row([
         dbc.Col(html.Img(
             src='./assets/images/team/carolina.png',
-            width=170,
-            height=170,
-            style={'margin-left':'auto', 'display':'block'}
+            style={'margin-left':'auto',
+                   'display':'block','width':'170px','height':'170px'}
         ), width=2, align='center'),
         dbc.Col(dcc.Markdown(
 '''
@@ -37,7 +36,8 @@ Mathematician, master in Applied Mathematics, and PhD candidate in Systems and C
             src='./assets/images/team/santiago.png',
             width=170,
             height=170,
-            style={'margin-right':'auto', 'display':'block'}
+            style={'margin-right':'auto',
+                   'display':'block','width':'170px','height':'170px'}
         ), width=2, align='center')
     ],
     justify='center'),
@@ -46,7 +46,8 @@ Mathematician, master in Applied Mathematics, and PhD candidate in Systems and C
             src='./assets/images/team/cristian.png',
             width=170,
             height=170,
-            style={'margin-left':'auto', 'display':'block'}
+            style={'margin-left':'auto',
+                   'display':'block','width':'170px','height':'170px'}
         ), width=2, align='center'),
         dbc.Col(dcc.Markdown(
 '''
@@ -62,14 +63,15 @@ Ingeniero en Mecatrónica y especialista en gerencia integral de proyectos con e
 '''
 ## **Jose Cáliz**
 
-Más tarde cambio esto porque no sé quién soy.
+Engineer by profession, student of Master in Statistics, Senior Data Scientist.  Hater of the purple food, fan of Ramen. Proud owner of 25 dreads and a terrible humour sense. QWERTY keyboard should die, all hail Dvorak. Look mom!, I am becoming successful
 '''
         ), width=4, align='center', style={'text-align': 'right'}),
         dbc.Col(html.Img(
             src='./assets/images/team/jose.png',
             width=170,
             height=170,
-            style={'margin-right':'auto', 'display':'block'}
+            style={'margin-right':'auto',
+                   'display':'block','width':'170px','height':'170px'}
         ), width=2, align='center')
     ],
     justify='center'),
@@ -78,7 +80,8 @@ Más tarde cambio esto porque no sé quién soy.
             src='./assets/images/team/camilo.png',
             width=170,
             height=170,
-            style={'margin-left':'auto', 'display':'block'}
+            style={'margin-left':'auto',
+                   'display':'block','width':'170px','height':'170px'}
         ), width=2, align='center'),
         dbc.Col(dcc.Markdown(
 '''
