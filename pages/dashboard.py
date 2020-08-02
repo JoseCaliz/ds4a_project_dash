@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 from server import db
 import plotly.graph_objects as go
+from utils.functions import predict_time_series
 import json
 import joblib
 import pickle
@@ -74,6 +75,7 @@ FROM (
         COUNT(*)  total_count
     FROM {}
     WHERE fecha >= '2015-12-21'
+    AND fecha <= '2019-12-15'
     AND municipio like 'BOGO%%'
     GROUP BY 1
     ORDER BY 1
@@ -597,14 +599,17 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
     fig5.update_layout(paper_bgcolor="#fffff0",margin={"r":5,"t":5,"l":5,"b":0},legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
 
     # dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
+    dfline_updated = predict_time_series(dfline, crime_drop)
+    df_to_plot = dfline_updated[
+        (dfline_updated.ds >= '2019-08-01') &
+        (dfline_updated.crime.isin(crime_drop))
+    ].copy()
     Line_fig2 = px.line(
-        dfline[
-            (dfline.final_sunday >= '2019-08-01') &
-            (dfline.crime.isin(crime_drop))
-        ],
-        x="final_sunday",
+        df_to_plot,
+        x="ds",
         y="num_cases",
-        color="crime"
+        color="crime",
+        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
     )
 
     Line_fig2.update_layout(
@@ -622,9 +627,6 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
     )
 
     return [fig5, Line_fig2]
-
-
-
 
 @app.callback(
            [
