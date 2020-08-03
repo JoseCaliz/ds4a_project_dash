@@ -218,7 +218,7 @@ Map_fig = px.choropleth_mapbox(
 Map_fig.update_layout(
     title='Total crimes in Bogotá by Neighborhood',
     paper_bgcolor="#fffff0",
-    margin={"r":0,"t":0,"l":20,"b":0},
+    margin={"r":5,"t":5,"l":5,"b":5},
     mapbox=dict(bearing=95)
 )
 
@@ -242,9 +242,9 @@ dropdown=dcc.Dropdown(
         )
 
 values={
-    'Robbery and theft':'robbery',
-    'Domestic violence':'dom_viol',
-    'Sex offenses':'sex_off',
+    'Robbery and Theft':'robbery',
+    'Domestic Violence':'dom_viol',
+    'Sex Offences':'sex_off',
     'Manslaughter, Murder':'murder'
 }
 
@@ -253,7 +253,7 @@ revval = {value : key for (key, value) in values.items()}
 dropdowncrime=dcc.Dropdown(
         id="crime_dropdown",
         options=[{"label":key, "value":values[key]} for key in values.keys()],
-        value=["sex_off",'murder'],
+        value=["robbery",'murder'],
         placeholder="Select a Crime",
         multi=True
 )
@@ -279,11 +279,11 @@ dropdownngbr=dcc.Dropdown(
         )
 
 
-gndr=['MASCULINO', 'FEMENINO']
+gndr={'MALE':'MASCULINO', 'FEMALE':'FEMENINO'}
 
 dropdowngndr=dcc.Dropdown(
         id="gndr_dropdown",
-        options=[{"label":gndr, "value":gndr} for gndr in gndr],
+        options=[{"label":key, "value":gndr[key]} for key in gndr.keys()],
         value='FEMENINO',
         placeholder="Select Gender",
         multi=False
@@ -329,7 +329,7 @@ Logo_Img=html.Div(
                     src=app.get_asset_url("logo.png"),
                     id="logo-image",
                     #height='auto',
-                    style={'height':'15vh'}
+                    style={'height':'15vh', 'width':'auto'}
 
 
                 )
@@ -400,9 +400,9 @@ fig4 = px.bar(df18, x="year", y="total",
              )
 
 fig4.update_layout(
-    # paper_bgcolor="#fffff0",
-    # plot_bgcolor='#fffff0',
-    margin={"r":5,"t":10,"l":5,"b":0},
+    paper_bgcolor="#fffff0",
+    plot_bgcolor='#fffff0',
+    margin={"r":5,"t":20,"l":5,"b":0},
     legend={'x':0}
 )
 
@@ -437,9 +437,9 @@ Line_fig.update_layout(
 layout = dbc.Container(children=[
 
 dbc.Row([
-    dbc.Col(dropdowncrime, width=6, lg=3),
-    dbc.Col(dropdownloca, width=6, lg=3),
-    dbc.Col(dropdown, width=6, lg=3),
+    dbc.Col(dropdowncrime, width=4, lg=4),
+    dbc.Col(dropdownloca, width=4, lg=4),
+    dbc.Col(dropdown, width=4, lg=4),
     #dbc.Col(html.Div("I wonder what to put here"), width=6, lg=3),
     ],justify='center',style={"height": "5%"}),
 
@@ -459,7 +459,7 @@ dbc.Row(
                                         html.H2("Risk Calculator"
                                         ),
 
-                                ], style={'height': '100%'}),
+                                ], style={'height': '100%','paddingLeft':'0'}),
 
                             ], style={'height': '5%'}),
 
@@ -501,42 +501,49 @@ dbc.Row(
                                         ], style={'height': '45%', 'width':'100%', 'marginLeft': '0', 'paddingLeft': '0'
                                         }),
                                     dbc.Row([
-                                        dbc.Col([dash_table.DataTable(id='table', style_as_list_view=True)
-                                                ],style={'height': '100%','paddingTop':'0' , 'width':'100%'}),
-                                        dbc.Col([dash_table.DataTable(id='table2', style_as_list_view=True)
+                                        dbc.Col([dash_table.DataTable(id='table', style_as_list_view=True,
+                                                                                    style_header={'backgroundColor': 'rgba(30, 30, 30,0.01)'},
+                                                                                      style_cell={'backgroundColor': 'rgba(50, 50, 50,0.01)'})
+                                                ],style={'height': '100%','paddingTop':'0' , 'width':'100%','paddingLeft':'40px'},
+
+                                                ),
+                                        dbc.Col([dash_table.DataTable(id='table2', style_as_list_view=True,
+                                                                                    style_header={'backgroundColor': 'rgba(30, 30, 30,0.01)'},
+                                                                                      style_cell={'backgroundColor': 'rgba(50, 50, 50,0.01)'})
                                                 ],style={'height': '100%','paddingTop':'0', 'width':'100%'})
                                         ], style={'height': '55%', 'width':'100%', 'marginLeft': '0', 'paddingLeft': '0'},
                                             no_gutters=True)
 
 
                                     ], style={'height': '100%','paddingTop':'25px'}),
-                            ], no_gutters=True,  style={'height': '95%'}
+                            ], no_gutters=True,
+                               style={'height': '95%','width':'100%','margin':'inherit'}
                             ),
-                        ], style={'height': '100%'}),# md=12),
-                    ], style={'height': '60%'}),
+                        ], style={'height': '100%','paddingLeft': '0'}),# md=12),
+                    ], style={'height': '60%','width':'100%','marginLeft':'inherit',"border":"2px #6ca88359 solid"}),
             #    ], width=12),
 
                     dbc.Row([
                         dbc.Col([
-                        dcc.Graph(figure=fig4, id='Gender_bar', className="h-100"),#className="h-100")
+                        dcc.Graph(figure=fig4, id='Gender_bar', className="h-100",style={"border":"2px #6ca88359 solid"}),#className="h-100")
 
                         ], style={'height': '100%','paddingTop':'10px'}),
-                    ],justify='end',align='end', no_gutters=True, style={'height': '40%'}),
-                ], width=5, style={"height": "100%"}),
+                    ],justify='end',align='end', no_gutters=True, style={'height': '40%','marginLeft':'inherit'}),
+                ], width=6, style={"height": "100%"}),
                 dbc.Col(
                 [
 
                     dbc.Row(
-                        dbc.Col([html.P(),dcc.Graph(figure=Map_fig, id='Crime_map',style={'height': '90%'})],
+                        dbc.Col([dcc.Graph(figure=Map_fig, id='Crime_map',style={'height': '95%',"border":"2px #6ca88359 solid"})],
                         style={"height": "100%"}
-                        ), style={'height': '70%'}
+                        ), style={'height': '70%','width':'100%'}
                     ),
 
                     dbc.Row(
                         #dbc.Col(width=2),
-                        dbc.Col(dcc.Graph(figure=Line_fig, id='predict_bar',className="h-100"),
+                        dbc.Col(dcc.Graph(figure=Line_fig, id='predict_bar',className="h-100",style={"border":"2px #6ca88359 solid"}),
                          style={'height': '100%', 'paddingTop':'0'}),
-                    style={'height': '30%'},
+                    style={'height': '30%','width':'100%'},
                     #no_gutters=True
                     )
 
@@ -577,7 +584,7 @@ def update_map_plot(crime_drop,year_drop):
             )
 
     Map_fig2.update_layout(
-        title='Total Crimes per Locality',margin={"r":0,"t":0,"l":5,"b":0},
+        title='Total Crimes per Locality',margin={"r":2,"t":2,"l":2,"b":2},
         paper_bgcolor="rgba(0,0,0,0)",mapbox=dict(bearing=95)
     )
     return Map_fig2
@@ -613,13 +620,14 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
     df18 = dfgender2[(dfgender2['crime'].isin(crime_drop))&(dfgender2['locid'].isin(nghbrhd))]
     fig5 = px.bar(df18, x="year", y="total",
                  color='sexo',# barmode='group',
-                 facet_col='crime',labels={'sexo':'Sexo','crime':'Crime','total':'Total','year':'Year'}
+                 facet_col='crime',labels={'sexo':'Sexo','crime':'Crime','total':'Total','year':'Year'},
+                 color_discrete_sequence=px.colors.qualitative.Safe
                  )
     fig5.update_layout(
-        # plot_bgcolor='LightGray',
-        paper_bgcolor="LightGray",
-        margin={"r":5,"t":5,"l":5,"b":0},
-        legend={'x':0,'bgcolor':'rgba(0,0,0,0)'}
+      paper_bgcolor="#fffff0",
+      plot_bgcolor='rgba(105,105,105,0.2)',
+      margin={"r":5,"t":15,"l":15,"b":0},
+      legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
     )
 
     # dfline_updated = predict_time_series(dfline, crime_drop)
@@ -646,7 +654,9 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
         x="ds",
         y="num_cases_fixed",
         color="crime",
-        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
+        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'},
+        labels={'num_cases_fixed':'Total Cases','crime':'Crime','final_sunday':'Sunday'},
+        color_discrete_sequence=px.colors.qualitative.Safe)
     )
 
     Line_fig2.update_layout(
@@ -657,10 +667,8 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
             'xanchor': 'center',
             'yanchor': 'top'
         },
-        paper_bgcolor="LightGray",
-        # plot_bgcolor='LightGray',
-        margin={"r":5,"t":10,"l":5,"b":0},
-        legend={'x':0}
+        paper_bgcolor="#fffff0",
+        plot_bgcolor='rgba(105,105,105,0.2)',
     )
 
     return [fig5, Line_fig2]
@@ -733,7 +741,7 @@ def populate_prob(click):
         x = np.random.choice(15,4, replace=False)
         x.sort()
         eve = event_probs.iloc[x]
-        eve = eve.round(decimals=4)
+        eve = eve.round(decimals=6)
         columns = [{"name": i, "id": i} for i in eve.columns]
 
         return [eve.to_dict('records'),columns]
