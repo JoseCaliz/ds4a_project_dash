@@ -1,0 +1,17 @@
+Event,Prob
+Being accepted at Harvard,0.060000000
+Dying in car,0.008771930
+Die falling,0.007874016
+Have extra fingers,0.002000000
+Foul ball,0.001470588
+Injury by toilet,0.000964000
+Living 100+ years,0.000173000
+Struck by lighning,0.000094000
+Hole in one (par 3),0.000080000
+Wasp killed,0.000015817
+Hit by asteroid,0.000013333
+Dog killed,0.000008897
+Killed by government,0.000008403
+Die by lightning,0.000006178
+Royal Flush,0.000001539
+Shark attack,0.000000267

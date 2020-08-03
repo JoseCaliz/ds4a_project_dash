@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 from server import db
 import plotly.graph_objects as go
+from utils.functions import predict_time_series
 import json
 import joblib
 import pickle
@@ -74,6 +75,7 @@ FROM (
         COUNT(*)  total_count
     FROM {}
     WHERE fecha >= '2015-12-21'
+    AND fecha <= '2019-12-15'
     AND municipio like 'BOGO%%'
     GROUP BY 1
     ORDER BY 1
@@ -93,7 +95,10 @@ with open("./data/data.pkl", "rb") as a_file:
 
 clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
-event_probs = pd.read_csv('./data/prob.csv')
+event_probs = pd.read_csv('./data/prob.txt')
+contributions = pd.read_pickle('./data/contributions.pkl')
+print(contributions.fixed_crime.unique())
+
 #data = data_orig.copy()
 #testeo = pd.DataFrame(data, index=[0])
 
@@ -159,8 +164,8 @@ agerangedict = {
 
 
 df = pd.read_sql_query(mapa_query, engine.connect()).reset_index(drop=True)
-matcher = pd.read_csv(r'./data/matcher.csv', encoding='UTF8')
-matcher2 = pd.read_csv(r'./data/matcherloca.csv', encoding='UTF8')
+matcher = pd.read_csv(r'./data/matcher.txt', encoding='UTF8')
+matcher2 = pd.read_csv(r'./data/matcherloca.txt', encoding='UTF8')
 mapper = matcher.set_index('barrio_original').to_dict()['nom_match']
 mapper2 = matcher2.set_index('bar_orig').to_dict()['loc_match']
 df['mapid'] = df.barrio.map(mapper)
@@ -401,16 +406,32 @@ fig4.update_layout(
     legend={'x':0}
 )
 
-Line_fig=px.line(
-    dfline[dfline.final_sunday >= '2019-08-01'],
-    x="final_sunday",
-    y="num_cases",
-    color="crime"
+
+
+dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
+print(dfline_updated)
+df_to_plot = dfline_updated[
+    (dfline_updated.ds >= '2019-08-01')
+].merge(
+    contributions[['prop', 'fixed_crime']],
+    left_on='crime', right_on='fixed_crime', how='inner'
+)
+
+df_to_plot['num_cases_fixed'] = np.ceil(
+    (df_to_plot['num_cases']*df_to_plot['prop'])
+)
+
+Line_fig = px.line(
+    df_to_plot,
+    x="ds",
+    y="num_cases_fixed",
+    color="crime",
+    line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
 )
 
 Line_fig.update_layout(
     title='Total Crimes in Selected Locality',
-    paper_bgcolor="#fffff0"
+    paper_bgcolor="LightGray",
 )
 
 layout = dbc.Container(children=[
@@ -602,22 +623,40 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
                  facet_col='crime',labels={'sexo':'Sexo','crime':'Crime','total':'Total','year':'Year'},
                  color_discrete_sequence=px.colors.qualitative.Safe
                  )
-    fig5.update_layout(paper_bgcolor="#fffff0",
-                       plot_bgcolor='rgba(105,105,105,0.2)',
-                       margin={"r":5,"t":15,"l":15,"b":0},
-                       legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
+    fig5.update_layout(
+      paper_bgcolor="#fffff0",
+      plot_bgcolor='rgba(105,105,105,0.2)',
+      margin={"r":5,"t":15,"l":15,"b":0},
+      legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
+    )
 
-    # dfline = dfloca[(dfloca['crime'].isin(crime_drop))&(dfloca['locid'].isin(nghbrhd))]
+    # dfline_updated = predict_time_series(dfline, crime_drop)
+    # dfline_updated.to_pickle('./data/dfline_updated.pkl')
+    
+    dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
+    df_to_plot = dfline_updated[
+        (dfline_updated.ds >= '2019-08-01') &
+        (dfline_updated.crime.isin(crime_drop))
+    ].merge(
+        contributions[
+            (contributions.fixed_crime.isin(crime_drop)) &
+            (contributions.localidad == ngbr_drop)
+        ][['prop', 'fixed_crime']],
+        left_on='crime', right_on='fixed_crime', how='inner'
+    )
+
+    df_to_plot['num_cases_fixed'] = np.ceil(
+        (df_to_plot['num_cases']*df_to_plot['prop'])
+    )
+
     Line_fig2 = px.line(
-        dfline[
-            (dfline.final_sunday >= '2019-08-01') &
-            (dfline.crime.isin(crime_drop))
-        ],
-        x="final_sunday",
-        y="num_cases",
+        df_to_plot,
+        x="ds",
+        y="num_cases_fixed",
         color="crime",
-        labels={'num_cases':'Total Cases','crime':'Crime','final_sunday':'Sunday'},
-        color_discrete_sequence=px.colors.qualitative.Safe
+        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'},
+        labels={'num_cases_fixed':'Total Cases','crime':'Crime','final_sunday':'Sunday'},
+        color_discrete_sequence=px.colors.qualitative.Safe)
     )
 
     Line_fig2.update_layout(
@@ -630,14 +669,9 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
         },
         paper_bgcolor="#fffff0",
         plot_bgcolor='rgba(105,105,105,0.2)',
-        margin={"r":5,"t":10,"l":5,"b":0},
-        legend={'x':0,'bgcolor':'rgba(0,0,0,0)'}
     )
 
     return [fig5, Line_fig2]
-
-
-
 
 @app.callback(
            [
