@@ -96,7 +96,9 @@ with open("./data/data.pkl", "rb") as a_file:
 clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
 event_probs = pd.read_csv('./data/prob.txt')
-contributions = pd.read_pickle('./data/contributions.pkl').dropna()
+contributions = pd.read_pickle('./data/contributions.pkl')
+print(contributions.fixed_crime.unique())
+
 #data = data_orig.copy()
 #testeo = pd.DataFrame(data, index=[0])
 
@@ -407,6 +409,7 @@ fig4.update_layout(
 
 
 dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
+print(dfline_updated)
 df_to_plot = dfline_updated[
     (dfline_updated.ds >= '2019-08-01')
 ].merge(
@@ -623,7 +626,6 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
     # dfline_updated.to_pickle('./data/dfline_updated.pkl')
     
     dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
-    
     df_to_plot = dfline_updated[
         (dfline_updated.ds >= '2019-08-01') &
         (dfline_updated.crime.isin(crime_drop))
