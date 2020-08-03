@@ -17,12 +17,12 @@ Python requirements:
 
 - Python >= 3.6
 - Prophet
-- scikit-learn >= 0.23.1
+- Scikit-learn >= 0.23.1
 
 
 ## Preprocessing and EDA
 
-We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing details and Exploratory Data Analisis procedure is detailes in the notebooks from `EDA` folder
+We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing and Exploratory Data Analisis procedure is detailed in the notebooks from `EDA` folder
 
  
 ## Hybrid model for Crime Probability Estimation
