@@ -13,3 +13,26 @@ Unfortunately in Colombia the situation is not far away, the high levels of crim
 ## Requirements
 
 
+Python requirements:
+
+- Python >= 3.5
+- Tensorflow >= 2.0
+- Pillow
+- h5py
+- xlrd
+- scikit-learn >= 0.23.1
+- matplotlib >= 2.1
+
+
+## Preprocessing and EDA
+
+We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing details and Exploratory Data Analisis procedure is detailes in the notebooks from `EDA folder`
+
+ 
+## Training
+
+
+
+## Evaluation
+
+
