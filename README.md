@@ -22,12 +22,12 @@ Python requirements:
 
 ## Preprocessing and EDA
 
-We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing and Exploratory Data Analisis procedure is detailed in the notebooks from `EDA` folder
+We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing and Exploratory Data Analisis procedure is detailed in the notebooks from `EDA` folder.
 
  
 ## Hybrid model for Crime Probability Estimation
 
-The Hybrid model for Crime Probability Estimation is based on Time Series forecasting using Prophet (https://facebook.github.io/prophet/), XGBoost, and probability estimation using Multinomial Naive Bayes (https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html). Training procedure and evaluation details can be found in `models` folder. In that folder, you will also find experiments performed with Kernel Density Estimation, although it was not used in the final model.
+The Hybrid model for Crime Probability Estimation is based on Time Series forecasting using Prophet (https://facebook.github.io/prophet/), XGBoost (https://github.com/dmlc/xgboost), and probability estimation using Multinomial Naive Bayes (https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html). Training procedure and evaluation details can be found in `models` folder. In that folder, you will also find experiments performed with Kernel Density Estimation, although it was not used in the final model.
 
 
 ## Web App
