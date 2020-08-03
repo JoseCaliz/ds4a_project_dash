@@ -97,8 +97,6 @@ clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
 event_probs = pd.read_csv('./data/prob.txt')
 contributions = pd.read_pickle('./data/contributions.pkl')
-print(contributions.fixed_crime.unique())
-
 #data = data_orig.copy()
 #testeo = pd.DataFrame(data, index=[0])
 
@@ -409,7 +407,6 @@ fig4.update_layout(
 
 
 dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
-print(dfline_updated)
 df_to_plot = dfline_updated[
     (dfline_updated.ds >= '2019-08-01')
 ].merge(
@@ -627,7 +624,7 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
       paper_bgcolor="#fffff0",
       plot_bgcolor='rgba(105,105,105,0.2)',
       margin={"r":5,"t":15,"l":15,"b":0},
-      legend={'x':0,'bgcolor':'rgba(0,0,0,0)'})#plot_bgcolor='#228822',
+      legend={'x':0,'bgcolor':'rgba(0,0,0,0)'}
     )
 
     # dfline_updated = predict_time_series(dfline, crime_drop)
@@ -654,9 +651,9 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
         x="ds",
         y="num_cases_fixed",
         color="crime",
-        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'},
+        line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'}),
         labels={'num_cases_fixed':'Total Cases','crime':'Crime','final_sunday':'Sunday'},
-        color_discrete_sequence=px.colors.qualitative.Safe)
+        color_discrete_sequence=px.colors.qualitative.Safe
     )
 
     Line_fig2.update_layout(
