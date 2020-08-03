@@ -1,12 +1,14 @@
-# DLGP for Diabetic Retinopathy Diagnosis and Uncertainty Quantification
+# Analysing Crime Trends in Colombia
 
-Implementation of the Deep Learning Gaussian Process for Diabetic Retinopathy Diagnosis:
+Codebase of the DS4A Final Project, by Team-79 * Cáliz José, De la Cruz Camilo, Garzón Carolina, Portela Cristian, Toledo-Cortés Santiago. "Analyzing crime trends in Colombia". Bogotá, Colombia 2020.
 
-* Santiago Toledo-Cortés, Melissa De La Pava, Oscar Perdómo, and Fabio A. González. ["Hybrid Deep Learning Gaussian Process for Diabetic Retinopathy Diagnosis and Uncertainty Quantification"].
 
 ## Abstract
 
-Diabetic Retinopathy (DR) is one of the microvascular complications of \emph{Diabetes Mellitus}, which remains as one of the leading causes of blindness worldwide. Computational models based on Convolutional Neural Networks represent the state of the art for the automatic detection of DR using eye fundus images. Most of the current work address this problem as a binary classification task. However, including the grade estimation and quantification of predictions uncertainty can potentially increase the robustness of the model. In this paper, a hybrid Deep Learning-Gaussian process method for DR diagnosis and uncertainty quantification is presented. This method combines the representational power of deep learning, with the ability to generalize from small datasets of Gaussian process models. The results show that uncertainty quantification in the predictions improves the interpretability of the method as a diagnostic support tool.
+Crime and violence are undoubtedly two of the main concerns of all citizens around the world, these acts that harm not only the victim but also the community and the Nations.  It generates a great impact on our society, so one of the main challenges of different governments and societies is to combat and improve statistics on the subject improving public policies and police action.
+
+Unfortunately in Colombia the situation is not far away, the high levels of crime and violence have been for a long time making it one of the most violent countries in the region, these issues have also been one of the main challenges of governance for the country over time.  The explanation of the different factors that influence this problem can provide us with a complete view of the behaviour of security problems in the country, thus generating great importance in the development and study of the subject.
+
 
 ## Requirements
 
