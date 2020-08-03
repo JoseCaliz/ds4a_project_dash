@@ -15,24 +15,19 @@ Unfortunately in Colombia the situation is not far away, the high levels of crim
 
 Python requirements:
 
-- Python >= 3.5
-- Tensorflow >= 2.0
-- Pillow
-- h5py
-- xlrd
+- Python >= 3.6
+- Prophet
 - scikit-learn >= 0.23.1
-- matplotlib >= 2.1
 
 
 ## Preprocessing and EDA
 
-We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing details and Exploratory Data Analisis procedure is detailes in the notebooks from `EDA folder`
+We used data provided by the police department that includes multiple crimes from 2010-2019 by city and neighborhood. The data can be found here: https://www.policia.gov.co/grupo-informaci%C3%B3n-criminalidad/estadistica-delictiva. For each crime, you need to download every CSV file from 2010 to 2019. Preprocessing details and Exploratory Data Analisis procedure is detailes in the notebooks from `EDA` folder
 
  
-## Training
+## Hybrid model for Crime Probability Estimation
+
+The Hybrid model for Crime Probability Estimation is based on Time Series forecasting using Prophet (https://facebook.github.io/prophet/) and probability estimation using Multinomial Naive Bayes. Training procedure and evaluation details can be found in `models` folder.
 
 
-
-## Evaluation
-
-
+## Web App
