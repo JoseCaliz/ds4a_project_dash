@@ -27,7 +27,9 @@ We used data provided by the police department that includes multiple crimes fro
  
 ## Hybrid model for Crime Probability Estimation
 
-The Hybrid model for Crime Probability Estimation is based on Time Series forecasting using Prophet (https://facebook.github.io/prophet/) and probability estimation using Multinomial Naive Bayes. Training procedure and evaluation details can be found in `models` folder.
+The Hybrid model for Crime Probability Estimation is based on Time Series forecasting using Prophet (https://facebook.github.io/prophet/) and probability estimation using Multinomial Naive Bayes (https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html). Training procedure and evaluation details can be found in `models` folder.
 
 
 ## Web App
+
+Web were developed using flask and dash using CSS to customize all related aspects like colors and the way the items are displayed to ensure a good user experience. Dashboard scripts are available at `pages` folder.
