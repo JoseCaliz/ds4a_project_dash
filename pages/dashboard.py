@@ -96,6 +96,7 @@ with open("./data/data.pkl", "rb") as a_file:
 clf = joblib.load('./data/naive_bayes_4_crimes.joblib.pkl')
 
 event_probs = pd.read_csv('./data/prob.txt')
+contributions = pd.read_pickle('./data/contributions.pkl').dropna()
 #data = data_orig.copy()
 #testeo = pd.DataFrame(data, index=[0])
 
@@ -399,20 +400,28 @@ fig4 = px.bar(df18, x="year", y="total",
 fig4.update_layout(
     # paper_bgcolor="#fffff0",
     # plot_bgcolor='#fffff0',
-    paper_bgcolor="LightGray",
     margin={"r":5,"t":10,"l":5,"b":0},
     legend={'x':0}
 )
 
+
+
 dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
 df_to_plot = dfline_updated[
     (dfline_updated.ds >= '2019-08-01')
-].copy()
+].merge(
+    contributions[['prop', 'fixed_crime']],
+    left_on='crime', right_on='fixed_crime', how='inner'
+)
+
+df_to_plot['num_cases_fixed'] = np.ceil(
+    (df_to_plot['num_cases']*df_to_plot['prop'])
+)
 
 Line_fig = px.line(
     df_to_plot,
     x="ds",
-    y="num_cases",
+    y="num_cases_fixed",
     color="crime",
     line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
 )
@@ -614,14 +623,26 @@ def update_gender_and_line_plot(crime_drop,ngbr_drop):
     # dfline_updated.to_pickle('./data/dfline_updated.pkl')
     
     dfline_updated = pd.read_pickle('./data/dfline_updated.pkl')
+    
     df_to_plot = dfline_updated[
         (dfline_updated.ds >= '2019-08-01') &
         (dfline_updated.crime.isin(crime_drop))
-    ].copy()
+    ].merge(
+        contributions[
+            (contributions.fixed_crime.isin(crime_drop)) &
+            (contributions.localidad == ngbr_drop)
+        ][['prop', 'fixed_crime']],
+        left_on='crime', right_on='fixed_crime', how='inner'
+    )
+
+    df_to_plot['num_cases_fixed'] = np.ceil(
+        (df_to_plot['num_cases']*df_to_plot['prop'])
+    )
+
     Line_fig2 = px.line(
         df_to_plot,
         x="ds",
-        y="num_cases",
+        y="num_cases_fixed",
         color="crime",
         line_dash=df_to_plot.is_pred.map({False:'Hist', True:'Prediction'})
     )
