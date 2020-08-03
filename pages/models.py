@@ -172,6 +172,50 @@ table_mape_xgboost = dash_table.DataTable(
 
 all_layout = html.Div([
     dbc.Row([
+        dbc.Col([
+            html.H1('General Information', style={
+                'font-size':'2.5em',
+                'font-weight':'bold',
+                'margin':'1em'
+            }),
+            dcc.Markdown('''
+
+Our model is a time series prediction of the total number of crimes for the
+entire 2020 as the data is not updated periodically. The idea of this section
+is to compare two models used for time prediction and to see what are the
+models that performs better. This the summary of an extensive test scenario of
+multiple combinations of models and try-outs. \n
+
+There are two models, an **XGBoost** and the **Prophet** model by facebook,
+since these two models are from different naturalities, it is imperative to
+explain is the mean of each column. \n
+
+### Prophet
+
+   * **Baseline.X**: This is the baseline assuming each of the predictions are
+   just the mean of the train values.
+   * **D, 5D, W, and 2W**: This is the rolling window to calculate, for example by
+   using D we would be predicting day by day, while 5D we would be predicting
+   the sum of the crime count for the next 5 Days.
+
+\n
+### XGBoost
+
+   * **Baseline**: As the previous case, this is the baseline assuming each of the predictions are
+   just the mean of the train values.
+   * **W.X**: We couldn't fit an XGBoost model using day as the granularity of the
+   data, as some crime showed really few vaules, in the end the prediciton was
+   the same as the last value, in this case these columns means how many weeks
+   in the past we use to predict the new value, for example W2 means we use the
+   two previous weeks to predict the next one.
+
+
+For the sake of simplicity, both models are predicting the next sum of the next
+two weeks
+            ''', style={'margin-left':'1em'}),
+        ], width=8)
+    ], justify='Left'),
+    dbc.Row([
         html.H1('MAE', style={
             'font-size':'2.5em',
             'font-weight':'bold'
